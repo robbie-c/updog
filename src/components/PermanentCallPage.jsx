@@ -1,6 +1,6 @@
 var React = require('react');
 
-var VideoArea = require('./VideoArea');
+var VideoArea = require('./CallArea');
 
 function onClickHandler() {
     console.log("yellow");
