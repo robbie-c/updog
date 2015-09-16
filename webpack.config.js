@@ -67,7 +67,8 @@ var clientConfig = _.merge({}, config, {
         filename: 'client/client.js'
     },
     externals: {
-        jquery: 'jQuery'
+        jquery: 'jQuery',
+        react: 'React'
     },
     plugins: config.plugins.concat(
         [

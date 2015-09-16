@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('babel/register');
+
 var app = require('./server/server');
 var debug = require('debug')('testwebrtc:server');
 var fs = require('fs');

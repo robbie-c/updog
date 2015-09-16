@@ -5,6 +5,9 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 $(function() {
 
+    var React = require('react');
+    console.log(React);
+
     var constraints = {audio: true, video: true};
     var video = document.querySelector('video');
 
