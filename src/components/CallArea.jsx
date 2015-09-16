@@ -26,7 +26,7 @@ var VideoArea = React.createClass({
 
         webrtc.on('readyToCall', function () {
             // you can name it anything
-            webrtc.joinRoom('your awesome room name');
+            webrtc.joinRoom('updog-chatter');
         });
 
         webrtc.on('videoAdded', function (video, peer) {
