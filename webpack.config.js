@@ -68,8 +68,10 @@ var clientConfig = _.merge({}, config, {
     },
     externals: {
         jquery: 'jQuery',
-        react: 'React'
+        react: 'React',
+        simplewebrtc: 'SimpleWebRTC'
     },
+    target: 'web',
     plugins: config.plugins.concat(
         [
             new webpack.DefinePlugin(_.merge(GLOBALS, {'__SERVER__': false}))
