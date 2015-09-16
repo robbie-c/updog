@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prestart": "gulp build",
     "start": "node src/runServer.js"
   },
   "dependencies": {
