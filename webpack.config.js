@@ -69,7 +69,9 @@ var clientConfig = _.merge({}, config, {
     externals: {
         jquery: 'jQuery',
         react: 'React',
-        simplewebrtc: 'SimpleWebRTC'
+        simplewebrtc: 'SimpleWebRTC',
+        io: 'io',
+        q: 'Q'
     },
     target: 'web',
     plugins: config.plugins.concat(
