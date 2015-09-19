@@ -2,12 +2,15 @@
 
 require('babel/register');
 
-var app = require('./server/server');
+
 var debug = require('debug')('testwebrtc:server');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var net = require('net');
+
+var app = require('./server/server');
+var signalling = require('./server/signalling');
 
 var basePort = normalizePort(process.env.PORT || '3000');
 
@@ -25,13 +28,16 @@ var netServer = net.createServer(tcpConnection);
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(httpsOptions, app);
 
+var io;
 
 if (process.env.NODE_ENV === 'production') {
     httpServer.listen(basePort);
+    io = signalling(httpServer);
 } else {
     netServer.listen(basePort);
     httpServer.listen(httpPort);
     httpsServer.listen(httpsPort);
+    io = signalling(httpsServer);
 }
 
 [netServer, httpServer, httpsServer].forEach(function(server) {
