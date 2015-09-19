@@ -3,9 +3,13 @@ html
     head
         title= title
         link(rel='stylesheet', href='/stylesheets/style.css')
+
+        // TODO serve these locally
         script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.4.min.js')
         script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js')
         script(type='text/javascript', src='https://simplewebrtc.com/latest.js')
+        script(type='text/javascript', src='https://cdn.socket.io/socket.io-1.3.5.js')
+        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js')
     body
         .react-mount-node
             != React.renderToString(component)
