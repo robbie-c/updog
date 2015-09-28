@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var mongoose = require('mongoose');
 var redis = require('redis');
 var RedisStore = require('connect-redis')(session);
 
@@ -12,6 +13,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var config = require('../config');
 var redisClient = require('./redisClient');
+
+mongoose.connect(config.mongo.url);
 
 var app = express();
 
