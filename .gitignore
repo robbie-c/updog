@@ -1,6 +1,9 @@
 # build directory
 /build/
 
+# redis databases
+*.rdb
+
 # Logs
 logs
 *.log
