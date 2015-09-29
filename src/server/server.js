@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
-var redis = require('redis');
 var RedisStore = require('connect-redis')(session);
 
 var helpers = require('./helpers');
@@ -18,7 +17,13 @@ var roomsRouter = require('./routes/rooms');
 var config = require('../config');
 var redisClient = require('./redisClient');
 
-mongoose.connect(config.mongo.url);
+mongoose.connect(config.mongo.url, {}, function(err) {
+    if (err) {
+        console.log(err)
+    } else {
+        console.log('Mongoose connected and authenticated');
+    }
+});
 
 var app = express();
 
