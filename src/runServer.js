@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-
+'use strict';
 require('babel/register');
-
 
 var debug = require('debug')('testwebrtc:server');
 var fs = require('fs');

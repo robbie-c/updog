@@ -3,7 +3,9 @@ var router = express.Router();
 
 router.get('/:roomName', function (req, res) {
 
-    var roomName = req.param('roomName');
+    var roomName = req.params['roomName'];
+
+    console.log(req.params);
 
     // TODO check that room is real, and user can see it
 

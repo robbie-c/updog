@@ -1,10 +1,8 @@
 var React = require('react');
 
 if (typeof window !== 'undefined') {
-    var SimpleWebRtc = require('simplewebrtc');
+    var ChatManager = require('../client/webrtc/ChatManager');
 }
-
-var ChatManager = require('../webrtc/ChatManager');
 
 var VideoArea = React.createClass({
 
@@ -13,24 +11,34 @@ var VideoArea = React.createClass({
             <div>
                 <video id="localVideo"></video>
                 <div id="remoteVideos"></div>
-                <button onClick={this.startAudio}>Start Audio</button>
+                <button onClick={this.startRealTimeAV}>Join real-time AV</button>
             </div>
         );
     },
 
     componentDidMount: function () {
+        var self = this;
+        this.localVideo = document.querySelector('#localVideo');
+        this.localVideo .onloadedmetadata = function(e) {
+            self.localVideo.play();
+        };
 
         this.chatManager = new ChatManager();
         this.chatManager.startTextChat();
 
-        console.log("chatManager started");
+        console.log('chatManager started');
     },
 
-    startAudio: function () {
-        this.chatManager.startAudio();
+    startRealTimeAV: function () {
+        var self = this;
+
+        this.chatManager.startRealTimeAV();
+
+        this.chatManager.events.on('localMediaStarted', function(stream) {
+            console.log(stream);
+            self.localVideo.src = window.URL.createObjectURL(stream);
+        })
     }
-
-
 });
 
 module.exports = VideoArea;

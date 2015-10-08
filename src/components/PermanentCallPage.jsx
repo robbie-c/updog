@@ -1,6 +1,6 @@
 var React = require('react');
 
-var VideoArea = require('./CallArea');
+var VideoArea = require('./CallArea.jsx');
 
 var PermanentCallPage = React.createClass({
     render: function() {
