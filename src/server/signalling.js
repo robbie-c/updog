@@ -1,5 +1,12 @@
 var socketIO = require('socket.io');
 
+if (typeof localStorage !== 'undefined') {
+    localStorage.debug = '*';
+}
+
+
+function noOp() {}
+
 function setUpSignalling(server) {
     var io = socketIO.listen(server);
 
@@ -10,39 +17,59 @@ function setUpSignalling(server) {
             screen: false
         };
 
-        client.on('direct message', function (details) {
+        client.on('webrtc peer message', function (details) {
             if (!details) return;
 
-            var otherClient = io.sockets.sockets[details.to];
-            if (!otherClient) return;
+            if (!details.to) {
+                console.log('no to field specified!');
+                return
+            }
+
+            if (!client.room) {
+                console.log('client not in a room!');
+                return
+            }
+
+            var otherClient = io.sockets.adapter.nsp.connected[details.to];
+            if (!otherClient)
+            {
+                console.log('couldnt find other client');
+                return;
+            }
+
+            // ensure they are in the same room
+            if (!client.room || client.room !== otherClient.room) {
+                console.log('wrong room');
+                return;
+            }
 
             // TODO ensure client can speak to that person
 
             details.from = client.id;
-            otherClient.emit('direct message', details);
+            otherClient.emit('webrtc peer message', details);
         });
 
-        client.on('room message', function (details) {
-            if (client.room) {
-                io.to(client.room).emit('room message', details);
-            }
-        });
 
         client.on('disconnect', function () {
             if (client.room) {
-                io.sockets.in(client.room).emit('remove', {
-                    id: client.id
-                });
+                var roomData = getRoomData(client.room);
+                io.to(client.room).emit('room data', roomData);
             }
         });
 
-        client.on('join', function (name, cb) {
+        client.on('join', function (name, cb=noOp) {
+
+            console.log('join');
 
             // TODO check that name is sane
             client.join(name);
             client.room = name;
 
-            cb('success');
+            var roomData = getRoomData(name);
+
+            cb(roomData);
+
+            io.to(name).emit('room data', roomData);
         });
 
         client.on('trace', function (data) {
@@ -52,13 +79,41 @@ function setUpSignalling(server) {
         });
 
         // TODO read these from a config file
-        var serverConfig = {
-            stunServers: [{"url": "stun:stun.l.google.com:19302"}],
-            turnServers: []
+        var peerConnectionConfig = {
+            //stunServers: [{"url": "stun:stun.l.google.com:19302"}],
+            //turnServers: [],
+            iceServers: [
+                {urls: "stun:stun.l.google.com:19302"}
+            ]
         };
 
-        client.emit('start', serverConfig);
+        client.emit('start', {
+            mySocketId: client.id,
+            peerConnectionConfig: peerConnectionConfig
+        });
     });
+
+    function getRoomData(roomName) {
+        var participants = {};
+        var room = findClientsSocketByRoomId(roomName);
+        room.forEach(function (client) {
+            participants[client.id] = client.resources;
+        });
+        return {
+            participants: participants
+        }
+    }
+
+    function findClientsSocketByRoomId(roomName) {
+        var res = [];
+        var room = io.sockets.adapter.rooms[roomName];
+        if (room) {
+            Object.keys(room).forEach(function(id) {
+                res.push(io.sockets.adapter.nsp.connected[id]);
+            });
+        }
+        return res;
+    }
 
     return io;
 }

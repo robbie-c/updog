@@ -19,7 +19,7 @@ var config = {
 
     cache: DEBUG,
     debug: DEBUG,
-    devtool: DEBUG ? '#inline-source-map' : false,
+    devtool: DEBUG ? '#source-map' : false,
 
     stats: {
         colors: true,
@@ -70,7 +70,9 @@ var clientConfig = _.merge({}, config, {
         react: 'React',
         simplewebrtc: 'SimpleWebRTC',
         io: 'io',
-        q: 'Q'
+        q: 'Q',
+        underscore: '_'
+
     },
     target: 'web',
     plugins: config.plugins.concat(

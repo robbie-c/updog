@@ -10,7 +10,8 @@ router.get('/:roomName', function (req, res) {
     // TODO check that room is real, and user can see it
 
     var props = {
-        chatMessages: [] // TODO
+        chatMessages: [], // TODO
+        participants: []
     };
 
     res.reactRender('Chat Room: ' + roomName, 'PermanentCallPage', props);
