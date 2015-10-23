@@ -17,7 +17,8 @@ var VideoArea = React.createClass({
 
     render: function () {
         var self = this;
-        console.log(this.state.participants);
+        console.log("participants", this.state.participants);
+        console.log("streams", this.state.streams);
 
         return (
             <div>
@@ -91,9 +92,13 @@ var VideoArea = React.createClass({
             console.log(peerSocketId, stream);
 
             var oldStreams = self.state.streams;
-            var newStreams = _.extend({
-                peerSocketId: stream
-            }, oldStreams);
+
+            var newStreamObj = {};
+            newStreamObj[peerSocketId] = stream;
+            var newStreams = _.extend(newStreamObj, oldStreams);
+
+            console.log('oldStreams', oldStreams);
+            console.log('newStreams', newStreams);
             self.setState({
                 streams: newStreams
             })

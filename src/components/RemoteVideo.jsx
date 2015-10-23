@@ -5,22 +5,26 @@ var RemoteVideo = React.createClass({
     render: function () {
         var self = this;
         return (
-            <video ref={(video) => self._video = video.getDOMNode()}>
+            <video ref={(videoReact) => self.attachStreamToVideo(videoReact)}>
             </video>
         );
     },
 
-    componentDidMount: function () {
-        var self = this;
-        console.log('rendering video', this.props.stream);
-        var url = URL.createObjectURL(this.props.stream);
+    attachStreamToVideo: function(videoReact) {
+        if (videoReact != null) {
+            console.log('rendering video', this.props.stream);
 
-        console.log('url', url);
-        console.log('this._video', this._video);
-        this._video.src = url;
-        this._video.onloadedmetadata = function(e) {
-            self._video.play();
-        };
+            var url = URL.createObjectURL(this.props.stream);
+            console.log('url', url);
+
+            var videoDOM = videoReact.getDOMNode();
+            console.log('videoDOM', videoDOM);
+
+            videoDOM.src = url;
+            videoDOM.onloadedmetadata = function (e) {
+                videoDOM.play();
+            };
+        }
     }
 
 });
