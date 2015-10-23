@@ -1,5 +1,21 @@
 
-var WebRTCAdaptor = require('webrtc-adapter');
+window.RTCSessionDescription = (
+    window.RTCSessionDescription ||
+    window.mozRTCSessionDescription ||
+    window.webkitRTCSessionDescription
+);
+
+window.RTCIceCandidate = (
+    window.RTCIceCandidate ||
+    window.mozRTCIceCandidate ||
+    window.webkitRTCIceCandidate
+);
+
+window.RTCPeerConnection = (
+    window.RTCPeerConnection ||
+    window.mozRTCPeerConnection ||
+    window.webkitRTCPeerConnection
+);
 
 var setFunctions = require('set-functions');
 
@@ -26,13 +42,19 @@ class Peer {
 
         this.peerConnection = null;
         this.peerConnectionConfig = this.parentPeerManager.parentChatManager.peerConnectionConfig;
+
+        this.hasIce = false;
+        this.hasSdp = false;
+        this.hasMadeReply = false;
+
+        this.streamPromise = this.parentPeerManager.awaitLocalStream();
     }
 
     start() {
         var self = this;
 
         console.log('peer config', this.peerConnectionConfig);
-        this.peerConnection = new WebRTCAdaptor.RTCPeerConnection(this.peerConnectionConfig);
+        this.peerConnection = new RTCPeerConnection(this.peerConnectionConfig);
         var pc = this.peerConnection;
 
         pc.onicecandidate = function (evt) {
@@ -42,53 +64,85 @@ class Peer {
         };
         pc.onaddstream = function (evt) {
             console.log('got remote stream', evt.stream);
-            //self.parentPeerManager.addStream(evt.stream, self.peerSocketId);
+            self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
         };
 
         if (this.isCaller) {
-            this.parentPeerManager.awaitLocalStream()
-                .then((stream) => {
+
+                this.streamPromise.then((stream) => {
+                    console.log('got local media for peer', stream);
                     pc.addStream(stream);
-                    pc.createOffer(function(offer) {
+                    pc.createOffer(function (offer) {
                         console.log('created offer', offer);
-                        pc.setLocalDescription(offer);
-                        self.sendPeerMessage({
-                            sessionDescription: offer
-                        })
+                        pc.setLocalDescription(offer, function() {
+                            self.sendPeerMessage({
+                                sessionDescription: offer
+                            })
+                        });
+                    }, function (err) {
+                        console.log('failed to create offer', err)
+                    }, {
+                        offerToReceiveAudio: true,
+                        offerToReceiveVideo: true
                     });
                 });
+
         }
     }
 
     _receiveIceCandidateMessage(message) {
-        console.log('got ice candidate');
-        var candidate = new WebRTCAdaptor.RTCIceCandidate(message.iceCandidate);
+        console.log('ice');
+
+        var candidate = new RTCIceCandidate(message.iceCandidate);
         this.peerConnection.addIceCandidate(candidate);
+        this.hasIce = true;
+
+        if (!this.isCaller) {
+            this._makeReplyIfReady()
+        }
     }
 
     _receiveSessionDescriptionMessage(message) {
-        var self = this;
         var pc = this.peerConnection;
 
         console.log('got session description');
-        var description = new WebRTCAdaptor.RTCSessionDescription(message.sessionDescription);
+        var description = new RTCSessionDescription(message.sessionDescription);
         pc.setRemoteDescription(description);
 
-        this.parentPeerManager.awaitLocalStream()
-            .then((stream) => {
-                pc.addStream(stream);
-                pc.createAnswer(function(offer) {
-                    console.log('created answer', offer);
-                    pc.setLocalDescription(offer);
-                    self.sendPeerMessage({
-                        sessionDescription: offer
-                    })
+        this.hasSdp = true;
+
+        if (!this.isCaller) {
+            this._makeReplyIfReady()
+        }
+    }
+
+    _makeReplyIfReady() {
+        var self = this;
+        var pc = this.peerConnection;
+
+        if (this.hasIce && this.hasSdp) {
+            if (!this.hasMadeReply) {
+                this.hasMadeReply = true;
+                this.streamPromise.then((stream) => {
+                    console.log('got local media for peer', stream);
+                    pc.addStream(stream);
+                    pc.createAnswer(function (answer) {
+                        console.log(pc.iceConnectionState, pc.iceGatheringState);
+                        console.log('created answer', answer);
+                        pc.setLocalDescription(answer, function() {
+                            self.sendPeerMessage({
+                                sessionDescription: answer
+                            });
+                        });
+                    }, function(err) {
+                        console.log('error in creating answer', err);
+                    });
                 });
-            });
+            }
+        }
     }
 
     receivePeerMessage(peerMessage) {
-        console.log('receive', peerMessage);
         if (peerMessage.iceCandidate) {
             this._receiveIceCandidateMessage(peerMessage);
         } else if (peerMessage.sessionDescription) {
@@ -97,7 +151,6 @@ class Peer {
     }
 
     sendPeerMessage(peerMessage) {
-        console.log('send', peerMessage);
         this.parentPeerManager.sendMessage({
             to: this.peerSocketId,
             content: peerMessage
@@ -127,9 +180,6 @@ export default class PeerManager {
             newParticipantIds.delete(this.parentChatManager.mySocketId);
         }
 
-        console.log([...oldParticipantIds]);
-        console.log([...newParticipantIds]);
-
         var addedParticipantIds = setFunctions.subtract(newParticipantIds, oldParticipantIds);
         var removedParticipantIds = setFunctions.subtract(oldParticipantIds, newParticipantIds);
 
@@ -151,7 +201,6 @@ export default class PeerManager {
     }
 
     receiveMessage(message) {
-        console.log('got message from peer', message);
         if (message && message.from) {
             var peer = this.peers[message.from];
             if (peer) {
@@ -176,6 +225,10 @@ export default class PeerManager {
 
     awaitLocalStream() {
         return this.parentChatManager.awaitLocalStream();
+    }
+
+    addRemoteStream(stream, peerSocketId) {
+        this.parentChatManager.addRemoteStream(stream, peerSocketId);
     }
 }
 
