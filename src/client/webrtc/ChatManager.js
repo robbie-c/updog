@@ -34,7 +34,8 @@ export default class ChatManager {
             'localMediaChanged',
             'localMediaFinished',
             'roomJoined',
-            'roomDataChanged'
+            'roomDataChanged',
+            'remoteStreamAdded'
         ]);
     }
 
@@ -103,5 +104,11 @@ export default class ChatManager {
         this.socketManager.sendWebRTCPeerMessage(message);
     }
 
+    addRemoteStream(stream, peerSocketId) {
+        this.events.emit('remoteStreamAdded', {
+            stream: stream,
+            peerSocketId: peerSocketId
+        })
+    }
 
 }

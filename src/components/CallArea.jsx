@@ -4,23 +4,39 @@ if (typeof window !== 'undefined') {
     var ChatManager = require('../client/webrtc/ChatManager');
 }
 
+var RemoteVideo = require('./RemoteVideo.jsx');
+
 var VideoArea = React.createClass({
 
     getInitialState: function() {
         return {
-            participants: {}
+            participants: {},
+            streams: {}
         }
     },
 
     render: function () {
-
+        var self = this;
         console.log(this.state.participants);
 
         return (
             <div>
-                <video id="localVideo"></video>
-                <div id="remoteVideos"></div>
-                <button onClick={this.startRealTimeAV}>Join real-time AV</button>
+                <h1>Remote Video</h1>
+                <div id="remoteVideos">
+                    {
+                        Object.keys(this.state.streams).map(function(peerSocketId){
+                            var stream = self.state.streams[peerSocketId];
+                            return (
+                                <RemoteVideo key={peerSocketId}
+                                             stream={stream}
+                                             peerSocketId={peerSocketId}>
+                                </RemoteVideo>
+                            );
+                        })
+                    }
+                </div>
+                <h1>Local Video</h1>
+                <video id="localVideo" muted={true}></video>
                 <div>
                     <ul>
                         {
@@ -30,6 +46,7 @@ var VideoArea = React.createClass({
                         }
                     </ul>
                 </div>
+
             </div>
         );
     },
@@ -53,6 +70,9 @@ var VideoArea = React.createClass({
         });
 
         console.log('chatManager started');
+
+        // TODO do this on a button click, right now doesn't actually work
+        this.startRealTimeAV();
     },
 
     startRealTimeAV: function () {
@@ -61,14 +81,21 @@ var VideoArea = React.createClass({
         this.chatManager.startRealTimeAV();
 
         this.chatManager.events.on('localMediaStarted', function(stream) {
-            console.log(stream);
+            console.log('local media stream', stream);
             self.localVideo.src = window.URL.createObjectURL(stream);
         });
 
-        this.chatManager.events.on('participantsChanged', function(newParticipants) {
-            console.log(newParticipants);
-            this.setState({
-                participants: newParticipants
+        this.chatManager.events.on('remoteStreamAdded', function(data) {
+            var peerSocketId = data.peerSocketId;
+            var stream = data.stream;
+            console.log(peerSocketId, stream);
+
+            var oldStreams = self.state.streams;
+            var newStreams = _.extend({
+                peerSocketId: stream
+            }, oldStreams);
+            self.setState({
+                streams: newStreams
             })
         })
     }
