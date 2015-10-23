@@ -43,11 +43,16 @@ class Peer {
         this.peerConnection = null;
         this.peerConnectionConfig = this.parentPeerManager.parentChatManager.peerConnectionConfig;
 
-        this.hasIce = false;
+        this.hasAtLeastOneIce = false;
         this.hasSdp = false;
         this.hasMadeReply = false;
 
         this.streamPromise = this.parentPeerManager.awaitLocalStream();
+
+        this.offerOptions = {
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true
+        }
     }
 
     start() {
@@ -62,31 +67,49 @@ class Peer {
                 iceCandidate: evt.candidate
             });
         };
+
         pc.onaddstream = function (evt) {
             console.log('got remote stream', evt.stream);
             self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
         };
 
+        pc.onremovestream = function(evt) {
+            console.log('stream removed!', evt.stream);
+        };
+
+        pc.onsignalingstatechange = function(evt) {
+            console.log("onsignalingstatechange event detected!", pc.signalingState );
+
+            if (pc.signalingState === 'closed') {
+                self.end();
+            }
+
+            self.parentPeerManager.removeRemoteStream(self.peerSocketId);
+        };
+
         if (this.isCaller) {
-
-                this.streamPromise.then((stream) => {
-                    console.log('got local media for peer', stream);
-                    pc.addStream(stream);
-                    pc.createOffer(function (offer) {
-                        console.log('created offer', offer);
-                        pc.setLocalDescription(offer, function() {
-                            self.sendPeerMessage({
-                                sessionDescription: offer
-                            })
-                        });
-                    }, function (err) {
-                        console.log('failed to create offer', err)
-                    }, {
-                        offerToReceiveAudio: true,
-                        offerToReceiveVideo: true
+            this.streamPromise.then((stream) => {
+                console.log('got local media for peer', stream);
+                pc.addStream(stream);
+                pc.createOffer(function (offer) {
+                    console.log('created offer', offer);
+                    pc.setLocalDescription(offer, function() {
+                        self.sendPeerMessage({
+                            sessionDescription: offer
+                        })
                     });
-                });
+                }, function (err) {
+                    console.log('failed to create offer', err)
+                }, self.offerOptions);
+            });
 
+        }
+    }
+
+    end() {
+        console.log('ending connection to', this.peerSocketId);
+        if (this.peerConnection && this.peerConnection.signalingState !== 'closed') {
+            this.peerConnection.close();
         }
     }
 
@@ -95,7 +118,7 @@ class Peer {
 
         var candidate = new RTCIceCandidate(message.iceCandidate);
         this.peerConnection.addIceCandidate(candidate);
-        this.hasIce = true;
+        this.hasAtLeastOneIce = true;
 
         if (!this.isCaller) {
             this._makeReplyIfReady()
@@ -120,7 +143,7 @@ class Peer {
         var self = this;
         var pc = this.peerConnection;
 
-        if (this.hasIce && this.hasSdp) {
+        if (this.hasAtLeastOneIce && this.hasSdp) {
             if (!this.hasMadeReply) {
                 this.hasMadeReply = true;
                 this.streamPromise.then((stream) => {
@@ -193,7 +216,11 @@ export default class PeerManager {
         });
 
         this.handleAddedParticipants(addedParticipants);
+        this.handleRemovedParticipants(removedParticipants);
 
+        this.participants = newParticipants;
+
+        console.log('updated participants', this.participants);
     }
 
     sendMessage(message) {
@@ -223,12 +250,30 @@ export default class PeerManager {
         }
     }
 
+    handleRemovedParticipants(removedParticipants) {
+        console.log('handle removed participants');
+        for (var peerSocketId in removedParticipants) {
+            if(removedParticipants.hasOwnProperty(peerSocketId)) {
+                console.log('remove peer', peerSocketId);
+                var peer = this.peers[peerSocketId];
+                if (peer) {
+                    peer.end();
+                    delete this.peers[peerSocketId];
+                }
+            }
+        }
+    }
+
     awaitLocalStream() {
         return this.parentChatManager.awaitLocalStream();
     }
 
     addRemoteStream(stream, peerSocketId) {
         this.parentChatManager.addRemoteStream(stream, peerSocketId);
+    }
+
+    removeRemoteStream(peerSocketId) {
+        this.parentChatManager.removeRemoteStream(peerSocketId);
     }
 }
 

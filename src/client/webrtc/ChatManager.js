@@ -35,7 +35,8 @@ export default class ChatManager {
             'localMediaFinished',
             'roomJoined',
             'roomDataChanged',
-            'remoteStreamAdded'
+            'remoteStreamAdded',
+            'remoteStreamRemoved'
         ]);
     }
 
@@ -107,6 +108,12 @@ export default class ChatManager {
     addRemoteStream(stream, peerSocketId) {
         this.events.emit('remoteStreamAdded', {
             stream: stream,
+            peerSocketId: peerSocketId
+        })
+    }
+
+    removeRemoteStream(peerSocketId) {
+        this.events.emit('remoteStreamRemoved', {
             peerSocketId: peerSocketId
         })
     }

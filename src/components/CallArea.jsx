@@ -102,7 +102,23 @@ var VideoArea = React.createClass({
             self.setState({
                 streams: newStreams
             })
-        })
+        });
+
+        this.chatManager.events.on('remoteStreamRemoved', function(data) {
+            var peerSocketId = data.peerSocketId;
+            console.log('remove stream from call area', peerSocketId);
+
+            var oldStreams = self.state.streams;
+
+            var newStreamObj = _.extend({}, oldStreams);
+            delete newStreamObj[peerSocketId];
+
+            console.log('oldStreams', oldStreams);
+            console.log('newStreams', newStreamObj);
+            self.setState({
+                streams: newStreamObj
+            })
+        });
     }
 });
 
