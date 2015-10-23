@@ -64,7 +64,6 @@ export default class SocketManager extends UniversalEvents {
         });
 
         socket.on('webrtc peer message', function(message) {
-            console.log('received webrtc peer message');
             super.emit('webrtc peer message', message);
         })
     }
