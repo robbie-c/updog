@@ -3,8 +3,25 @@ var merge = require('deepmerge');
 
 var hostname = os.hostname();
 
+console.log('loading config for', hostname);
+
 var config = {
-    sessionSecret: 'dOvgrWZJBeB41k72HAinaFRTRC3fc5ix'
+    sessionSecret: 'dOvgrWZJBeB41k72HAinaFRTRC3fc5ix',
+    postgres: {
+        host: 'ec2-54-217-202-109.eu-west-1.compute.amazonaws.com',
+        port: 5432,
+        database: 'd31jqimr8d6bdl',
+        user: 'uqlgahxmefmvcx',
+        pass: '8MYhGqRLKi053eSASkgfumzM9L'
+    },
+    redis: {
+        host: 'pub-redis-16317.us-east-1-2.5.ec2.garantiadata.com',
+        port: 16317,
+        pass: 'KabiRjTkm2tfCN57Lj3NcAR4jyJby6j7'
+    },
+    mongo: {
+        url: 'mongodb://updog:8IhiLQ0ZycWoYDNyKVelQOwqQ9o39uoy@ds041563.mongolab.com:41563/updog'
+    }
 };
 
 if (/saffron/.test(hostname)) {
