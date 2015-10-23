@@ -15,11 +15,19 @@ export default class DeviceManager {
         ]);
         this.parentChatManager = parentChatManager;
         this.userMediaRequested = false;
+        this.stream = null;
     }
 
     requestAudioAndVideo() {
+        var self = this;
+
         console.log('request audio and video');
         var events = this.events;
+
+        if (this.stream) {
+            console.log('already got the stream');
+            return Promise.resolve(this.stream);
+        }
 
         // TODO allow retrying if the users says no
 
@@ -31,7 +39,8 @@ export default class DeviceManager {
                     video: true
                 },
                 function (stream) {
-                    console.log(stream);
+                    console.log('got the local stream at device manager', stream);
+                    self.stream = stream;
                     events.emit('audioAndVideoAccepted', stream);
                 },
                 function (err) {
