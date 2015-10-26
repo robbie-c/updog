@@ -2,15 +2,11 @@
 
 // TODO need to think about server restarts
 
-var adaptor = require('webrtc-adapter');
-
 import UniversalEvents from 'universalevents';
 
 import SocketManager from './SocketManager';
 import DeviceManager from './DeviceManager';
 import PeerManager from './PeerManager';
-
-var _ = require('underscore');
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
 
@@ -52,25 +48,25 @@ export default class ChatManager {
 
         this.socketManager.start();
 
-        this.socketManager.on('socketConnected', function(serverData) {
+        this.socketManager.on('socketConnected', function (serverData) {
             console.log('server data', serverData);
             self.peerConnectionConfig = serverData.peerConnectionConfig;
             self.mySocketId = serverData.mySocketId;
         });
 
-        this.socketManager.on('roomJoined', function(roomData) {
+        this.socketManager.on('roomJoined', function (roomData) {
             self.peerManager.updateParticipants(roomData.participants);
             self.events.emit('roomJoined', roomData);
         });
 
-        this.socketManager.on('roomDataChanged', function(roomData) {
+        this.socketManager.on('roomDataChanged', function (roomData) {
             self.roomData = roomData;
             console.log('roomData changed', roomData);
             self.peerManager.updateParticipants(roomData.participants);
             self.events.emit('roomDataChanged', roomData);
         });
 
-        this.socketManager.on('webrtc peer message', function(message) {
+        this.socketManager.on('webrtc peer message', function (message) {
             self.peerManager.receiveMessage(message);
         });
     }
@@ -88,7 +84,7 @@ export default class ChatManager {
             .then((stream)=> {
                 this.events.emit('localMediaStarted', stream)
             })
-            .catch((err)=>{
+            .catch((err)=> {
                 console.error(err);
             });
     }

@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var React = require('react');
 
 var componentRegistry = require('../components/registry');
@@ -10,7 +9,6 @@ var props = window.robbie.props;
 
 var element = React.createElement(componentRegistry[reactType], props);
 
-
-React.render(element, mountNode, function() {
-    console.log("done");
+React.render(element, mountNode, function () {
+    console.log('done');
 });

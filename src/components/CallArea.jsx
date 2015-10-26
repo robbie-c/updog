@@ -1,4 +1,5 @@
 var React = require('react');
+var _ = require('underscore');
 
 if (typeof window !== 'undefined') {
     var ChatManager = require('../client/webrtc/ChatManager');
@@ -8,7 +9,7 @@ var RemoteVideo = require('./RemoteVideo.jsx');
 
 var VideoArea = React.createClass({
 
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             participants: {},
             streams: {}
@@ -17,15 +18,16 @@ var VideoArea = React.createClass({
 
     render: function () {
         var self = this;
-        console.log("participants", this.state.participants);
-        console.log("streams", this.state.streams);
+        console.log('participants', this.state.participants);
+        console.log('streams', this.state.streams);
 
         return (
             <div>
                 <h1>Remote Video</h1>
+
                 <div id="remoteVideos">
                     {
-                        Object.keys(this.state.streams).map(function(peerSocketId){
+                        Object.keys(this.state.streams).map(function (peerSocketId) {
                             var stream = self.state.streams[peerSocketId];
                             return (
                                 <RemoteVideo key={peerSocketId}
@@ -41,7 +43,7 @@ var VideoArea = React.createClass({
                 <div>
                     <ul>
                         {
-                            Object.keys(this.state.participants).map(function(participantId){
+                            Object.keys(this.state.participants).map(function (participantId) {
                                 return (<li key={participantId}>{participantId}</li>);
                             })
                         }
@@ -55,18 +57,18 @@ var VideoArea = React.createClass({
     componentDidMount: function () {
         var self = this;
         this.localVideo = document.querySelector('#localVideo');
-        this.localVideo .onloadedmetadata = function(e) {
+        this.localVideo.onloadedmetadata = function () {
             self.localVideo.play();
         };
 
         this.chatManager = new ChatManager();
         this.chatManager.startTextChat();
 
-        this.chatManager.events.on('roomJoined', function(roomData) {
+        this.chatManager.events.on('roomJoined', function (roomData) {
             self.setState({participants: roomData.participants});
         });
 
-        this.chatManager.events.on('roomDataChanged', function(roomData) {
+        this.chatManager.events.on('roomDataChanged', function (roomData) {
             self.setState({participants: roomData.participants});
         });
 
@@ -81,12 +83,12 @@ var VideoArea = React.createClass({
 
         this.chatManager.startRealTimeAV();
 
-        this.chatManager.events.on('localMediaStarted', function(stream) {
+        this.chatManager.events.on('localMediaStarted', function (stream) {
             console.log('local media stream', stream);
             self.localVideo.src = window.URL.createObjectURL(stream);
         });
 
-        this.chatManager.events.on('remoteStreamAdded', function(data) {
+        this.chatManager.events.on('remoteStreamAdded', function (data) {
             var peerSocketId = data.peerSocketId;
             var stream = data.stream;
             console.log(peerSocketId, stream);
@@ -104,7 +106,7 @@ var VideoArea = React.createClass({
             })
         });
 
-        this.chatManager.events.on('remoteStreamRemoved', function(data) {
+        this.chatManager.events.on('remoteStreamRemoved', function (data) {
             var peerSocketId = data.peerSocketId;
             console.log('remove stream from call area', peerSocketId);
 

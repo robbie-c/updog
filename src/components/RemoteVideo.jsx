@@ -10,7 +10,7 @@ var RemoteVideo = React.createClass({
         );
     },
 
-    attachStreamToVideo: function(videoReact) {
+    attachStreamToVideo: function (videoReact) {
         if (videoReact != null) {
             console.log('rendering video', this.props.stream);
 
@@ -21,7 +21,7 @@ var RemoteVideo = React.createClass({
             console.log('videoDOM', videoDOM);
 
             videoDOM.src = url;
-            videoDOM.onloadedmetadata = function (e) {
+            videoDOM.onloadedmetadata = function () {
                 videoDOM.play();
             };
         }

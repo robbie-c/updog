@@ -1,0 +1,25 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "ecmaFeatures": {
+    "modules": true,
+    "jsx": true
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    // remove this when I get a bit nearer to completion
+    "no-console": 0,
+
+    // TODO the former is what I want but doesn't seem to work
+    //"no-unused-vars": [2, {"args": "after-used", "argsIgnorePattern": "^_"}],
+    "no-unused-vars": 0,
+
+    "quotes": [2, "single"]
+  }
+}

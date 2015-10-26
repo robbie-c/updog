@@ -27,19 +27,17 @@ var netServer = net.createServer(tcpConnection);
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(httpsOptions, app);
 
-var io;
-
 if (process.env.NODE_ENV === 'production') {
     httpServer.listen(basePort);
-    io = signalling(httpServer);
+    signalling(httpServer);
 } else {
     netServer.listen(basePort);
     httpServer.listen(httpPort);
     httpsServer.listen(httpsPort);
-    io = signalling(httpsServer);
+    signalling(httpsServer);
 }
 
-[netServer, httpServer, httpsServer].forEach(function(server) {
+[netServer, httpServer, httpsServer].forEach(function (server) {
     server.on('error', onError.bind(server));
     server.on('listening', onListening.bind(server));
 });

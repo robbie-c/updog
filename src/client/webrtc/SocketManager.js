@@ -6,11 +6,11 @@ var io = require('io');
 var _ = require('underscore');
 
 export default class SocketManager extends UniversalEvents {
-/**
- *
- * @param {ChatManager} parentChatManager
- *
- */
+    /**
+     *
+     * @param {ChatManager} parentChatManager
+     *
+     */
     constructor(parentChatManager) {
         super([
             'socketConnected',
@@ -32,7 +32,7 @@ export default class SocketManager extends UniversalEvents {
 
         var socket = this.socket = io(this.parentChatManager.config.url);
 
-        socket.on('connect', function(data) {
+        socket.on('connect', function (data) {
             console.log(data);
             console.log('connected');
         });
@@ -42,7 +42,7 @@ export default class SocketManager extends UniversalEvents {
 
             self.connected = true;
 
-            socket.emit('join', self.parentChatManager.config.roomName, function(roomData) {
+            socket.emit('join', self.parentChatManager.config.roomName, function (roomData) {
                 console.log('room joined');
                 self._roomDataCache = roomData;
                 super.emit('roomJoined', roomData);
@@ -53,7 +53,7 @@ export default class SocketManager extends UniversalEvents {
             super.emit('socketConnected', serverData);
         });
 
-        socket.on('room data', function(roomData) {
+        socket.on('room data', function (roomData) {
             if (!_.isEqual(roomData, self._roomDataCache)) {
                 console.log('room data changed', roomData, self._roomDataCache);
                 self._roomDataCache = roomData;
@@ -63,7 +63,7 @@ export default class SocketManager extends UniversalEvents {
             }
         });
 
-        socket.on('webrtc peer message', function(message) {
+        socket.on('webrtc peer message', function (message) {
             super.emit('webrtc peer message', message);
         })
     }

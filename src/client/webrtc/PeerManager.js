@@ -1,3 +1,4 @@
+/* global RTCSessionDescription, RTCIceCandidate, RTCPeerConnection */
 
 window.RTCSessionDescription = (
     window.RTCSessionDescription ||
@@ -73,12 +74,12 @@ class Peer {
             self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
         };
 
-        pc.onremovestream = function(evt) {
+        pc.onremovestream = function (evt) {
             console.log('stream removed!', evt.stream);
         };
 
-        pc.onsignalingstatechange = function(evt) {
-            console.log("onsignalingstatechange event detected!", pc.signalingState );
+        pc.onsignalingstatechange = function () {
+            console.log('onsignalingstatechange event detected!', pc.signalingState);
 
             if (pc.signalingState === 'closed') {
                 self.end();
@@ -93,7 +94,7 @@ class Peer {
                 pc.addStream(stream);
                 pc.createOffer(function (offer) {
                     console.log('created offer', offer);
-                    pc.setLocalDescription(offer, function() {
+                    pc.setLocalDescription(offer, function () {
                         self.sendPeerMessage({
                             sessionDescription: offer
                         })
@@ -152,12 +153,12 @@ class Peer {
                     pc.createAnswer(function (answer) {
                         console.log(pc.iceConnectionState, pc.iceGatheringState);
                         console.log('created answer', answer);
-                        pc.setLocalDescription(answer, function() {
+                        pc.setLocalDescription(answer, function () {
                             self.sendPeerMessage({
                                 sessionDescription: answer
                             });
                         });
-                    }, function(err) {
+                    }, function (err) {
                         console.log('error in creating answer', err);
                     });
                 });
@@ -187,7 +188,7 @@ export default class PeerManager {
      *
      * @param {ChatManager} parentChatManager
      */
-    constructor (parentChatManager) {
+    constructor(parentChatManager) {
         this.parentChatManager = parentChatManager;
         this.peers = {};
         this.participants = {};
@@ -207,11 +208,11 @@ export default class PeerManager {
         var removedParticipantIds = setFunctions.subtract(oldParticipantIds, newParticipantIds);
 
         var addedParticipants = {};
-        addedParticipantIds.forEach(function(participantId) {
+        addedParticipantIds.forEach(function (participantId) {
             addedParticipants[participantId] = newParticipantIds[participantId];
         });
         var removedParticipants = {};
-        removedParticipantIds.forEach(function(participantId) {
+        removedParticipantIds.forEach(function (participantId) {
             removedParticipants[participantId] = removedParticipantIds[participantId];
         });
 
@@ -241,7 +242,7 @@ export default class PeerManager {
     handleAddedParticipants(addedParticipants) {
         console.log('handle added participants');
         for (var peerId in addedParticipants) {
-            if( addedParticipants.hasOwnProperty( peerId ) ) {
+            if (addedParticipants.hasOwnProperty(peerId)) {
                 console.log('new peer', peerId);
                 var peer = new Peer(this, peerId);
                 this.peers[peerId] = peer;
@@ -253,7 +254,7 @@ export default class PeerManager {
     handleRemovedParticipants(removedParticipants) {
         console.log('handle removed participants');
         for (var peerSocketId in removedParticipants) {
-            if(removedParticipants.hasOwnProperty(peerSocketId)) {
+            if (removedParticipants.hasOwnProperty(peerSocketId)) {
                 console.log('remove peer', peerSocketId);
                 var peer = this.peers[peerSocketId];
                 if (peer) {

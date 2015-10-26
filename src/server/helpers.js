@@ -1,4 +1,3 @@
-var express = require('express');
 var componentRegistry = require('../components/registry');
 var React = require('react');
 
@@ -7,7 +6,7 @@ function attachHelpers(req, res, next) {
 
         props = props || {};
 
-        var component = React.createElement(componentRegistry[reactClassName], props)
+        var component = React.createElement(componentRegistry[reactClassName], props);
 
         console.log(component);
 

@@ -4,8 +4,8 @@ if (typeof localStorage !== 'undefined') {
     localStorage.debug = '*';
 }
 
-
-function noOp() {}
+function noOp() {
+}
 
 function setUpSignalling(server) {
     var io = socketIO.listen(server);
@@ -31,8 +31,7 @@ function setUpSignalling(server) {
             }
 
             var otherClient = io.sockets.adapter.nsp.connected[details.to];
-            if (!otherClient)
-            {
+            if (!otherClient) {
                 console.log('couldnt find other client');
                 return;
             }
@@ -49,7 +48,6 @@ function setUpSignalling(server) {
             otherClient.emit('webrtc peer message', details);
         });
 
-
         client.on('disconnect', function () {
             if (client.room) {
                 var roomData = getRoomData(client.room);
@@ -57,7 +55,7 @@ function setUpSignalling(server) {
             }
         });
 
-        client.on('join', function (name, cb=noOp) {
+        client.on('join', function (name, cb = noOp) {
 
             console.log('join');
 
@@ -83,7 +81,7 @@ function setUpSignalling(server) {
             //stunServers: [{"url": "stun:stun.l.google.com:19302"}],
             //turnServers: [],
             iceServers: [
-                {urls: "stun:stun.l.google.com:19302"}
+                {urls: 'stun:stun.l.google.com:19302'}
             ]
         };
 
@@ -108,7 +106,7 @@ function setUpSignalling(server) {
         var res = [];
         var room = io.sockets.adapter.rooms[roomName];
         if (room) {
-            Object.keys(room).forEach(function(id) {
+            Object.keys(room).forEach(function (id) {
                 res.push(io.sockets.adapter.nsp.connected[id]);
             });
         }
