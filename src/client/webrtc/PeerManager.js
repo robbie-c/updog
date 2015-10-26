@@ -83,27 +83,21 @@ class Peer {
 
             if (pc.signalingState === 'closed') {
                 self.end();
+                self.parentPeerManager.removeRemoteStream(self.peerSocketId);
             }
-
-            self.parentPeerManager.removeRemoteStream(self.peerSocketId);
         };
 
         if (this.isCaller) {
+            console.log('await local media for peer', this.peerSocketId);
             this.streamPromise.then((stream) => {
                 console.log('got local media for peer', stream);
                 pc.addStream(stream);
                 pc.createOffer(function (offer) {
-                    console.log('created offer', offer);
-                    pc.setLocalDescription(offer, function () {
-                        self.sendPeerMessage({
-                            sessionDescription: offer
-                        })
-                    });
+                    self._gotLocalDescription(offer);
                 }, function (err) {
                     console.log('failed to create offer', err)
                 }, self.offerOptions);
             });
-
         }
     }
 
@@ -119,6 +113,7 @@ class Peer {
 
         var candidate = new RTCIceCandidate(message.iceCandidate);
         this.peerConnection.addIceCandidate(candidate);
+
         this.hasAtLeastOneIce = true;
 
         if (!this.isCaller) {
@@ -144,26 +139,37 @@ class Peer {
         var self = this;
         var pc = this.peerConnection;
 
-        if (this.hasAtLeastOneIce && this.hasSdp) {
+        if (this.hasSdp) {
             if (!this.hasMadeReply) {
                 this.hasMadeReply = true;
+                console.log('awaiting local media to reply to peer', this.peerSocketId);
                 this.streamPromise.then((stream) => {
                     console.log('got local media for peer', stream);
                     pc.addStream(stream);
                     pc.createAnswer(function (answer) {
-                        console.log(pc.iceConnectionState, pc.iceGatheringState);
-                        console.log('created answer', answer);
-                        pc.setLocalDescription(answer, function () {
-                            self.sendPeerMessage({
-                                sessionDescription: answer
-                            });
-                        });
+                        self._gotLocalDescription(answer);
                     }, function (err) {
                         console.log('error in creating answer', err);
                     });
                 });
             }
         }
+    }
+
+    _gotLocalDescription(description) {
+        var self = this;
+        var pc = this.peerConnection;
+
+        console.log('got local description', description);
+
+        pc.setLocalDescription(description, function () {
+            self.sendPeerMessage({
+                sessionDescription: description
+            });
+        }, function () {
+            console.log('set local description failed')
+
+        });
     }
 
     receivePeerMessage(peerMessage) {
