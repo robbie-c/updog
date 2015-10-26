@@ -1,3 +1,10 @@
+/*
+ This file is the entry point on the client side
+ */
+
+// add all our polyfills first, so that any later code can rely on them
+require('./polyfills');
+
 var React = require('react');
 
 var componentRegistry = require('../components/registry');
