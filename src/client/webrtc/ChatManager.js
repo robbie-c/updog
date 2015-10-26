@@ -7,17 +7,20 @@ import UniversalEvents from 'universalevents';
 import SocketManager from './SocketManager';
 import DeviceManager from './DeviceManager';
 import PeerManager from './PeerManager';
+var url = require('../url');
+
+var _ = require('underscore');
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
 
 var defaultConfig = {
-    url: 'https://localhost:3000', // TODO
-    roomName: 'robbiesroom'
+    url: window.location.origin,
+    roomName: url.getRoomNameFromURL() || 'defaultRoom'
 };
 
 export default class ChatManager {
-    constructor() {
-        this.config = defaultConfig; // TODO merge config
+    constructor(config) {
+        this.config = _.extend({}, defaultConfig, config || {}); // TODO might want a deep merge?
         this.peerConnectionConfig = null;
         this.mySocketId = null;
 
