@@ -21,6 +21,10 @@ var config = {
     },
     mongo: {
         url: 'mongodb://updog:8IhiLQ0ZycWoYDNyKVelQOwqQ9o39uoy@ds041563.mongolab.com:41563/updog'
+    },
+    googleAuth: {
+        clientId: '640683349524-fhi7nh4ubqe9fogpchb0l6b462psd4ff.apps.googleusercontent.com',
+        clientSecret: 'LONIGF0jmbcZHseZmDC1KZtl'
     }
 };
 
