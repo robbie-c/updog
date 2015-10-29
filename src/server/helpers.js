@@ -19,6 +19,28 @@ function attachHelpers(req, res, next) {
         });
     };
 
+    res.apiSuccess = function (data) {
+        res.json({
+            status: 'success',
+            data: data
+        });
+    };
+
+    res.apiFailure = function (err) {
+        res.json({
+            status: 'failure',
+            error: errors.serializeError(err)
+        });
+    };
+
+    res.apiCallback = function (err, data) {
+        if (err) {
+            res.apiFailure(err);
+        } else {
+            res.apiSuccess(data);
+        }
+    };
+
     next();
 }
 
