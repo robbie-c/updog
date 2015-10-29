@@ -12,6 +12,7 @@ var helpers = require('./helpers');
 
 var indexRouter = require('./routes/index');
 var roomsRouter = require('./routes/rooms');
+var apiRouter = require('./routes/api/index');
 
 var config = require('../config');
 var redisClient = require('./redisClient');
@@ -55,6 +56,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/r', roomsRouter);
+app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
