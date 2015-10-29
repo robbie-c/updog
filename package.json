@@ -25,6 +25,7 @@
     "gulp-load-plugins": "^0.10.0",
     "gulp-nodemon": "^2.0.4",
     "gulp-shell": "^0.4.3",
+    "http-status": "^0.2.0",
     "jade": "~1.11.0",
     "lodash": "^3.10.1",
     "minimist": "^1.2.0",
