@@ -1,10 +1,12 @@
 // config/passport.js
 
-// load all the things we need
 var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-// load up the user model
-var User = require('../models/user');
+
+var config = require('../../config');
+import User from '../models/user';
+
 
 // expose this function to our app using module.exports
 module.exports = function (passport) {
@@ -94,5 +96,45 @@ module.exports = function (passport) {
 
             })
     );
+
+    passport.use(new GoogleStrategy({
+            clientID: config.googleAuth.clientId,
+            clientSecret: config.googleAuth.clientSecret,
+            callbackURL: config.googleAuth.callbackURL
+        },
+        function (token, refreshToken, profile, done) {
+
+            // apparently this needs to be wrapped, tutorial did not explain why
+            process.nextTick(function () {
+
+                // try to find the user based on their google id
+                User.findOne({'google.id': profile.id}, function (err, user) {
+                    if (err)
+                        return done(err);
+
+                    if (user) {
+                        // if a user is found, log them in
+                        return done(null, user);
+                    } else {
+                        // if the user isn't in our database, create a new user
+                        var newUser = new User();
+
+                        // set all of the relevant information
+                        newUser.google.id = profile.id;
+                        newUser.google.token = token;
+                        newUser.google.name = profile.displayName;
+                        newUser.google.email = profile.emails[0].value; // pull the first email
+
+                        // save the user
+                        newUser.save(function (err) {
+                            if (err)
+                                throw err;
+                            return done(null, newUser);
+                        });
+                    }
+                });
+            });
+
+        }));
 
 };
