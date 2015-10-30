@@ -24,6 +24,10 @@ router.post('/signup', passport.authenticate('local-signup', {
     failureRedirect: '/signup' // redirect back to the signup page if there is an error
 }));
 
+router.get('/completeprofile', isLoggedIn, function (req, res) {
+    res.reactRender('Complete Profile', 'CompleteProfilePage');
+});
+
 router.get('/profile', isLoggedIn, function (req, res) {
     res.reactRender('Profile', 'ProfilePage');
 });

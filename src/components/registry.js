@@ -3,5 +3,6 @@ module.exports = {
     LogInPage: require('./LogInPage.jsx'),
     SignUpPage: require('./SignUpPage.jsx'),
     PermanentCallPage: require('./PermanentCallPage.jsx'),
-    ProfilePage: require('./ProfilePage.jsx')
+    ProfilePage: require('./ProfilePage.jsx'),
+    CompleteProfilePage: require('./completeProfile/CompleteProfilePage.jsx')
 };
