@@ -3,9 +3,13 @@ var router = express.Router();
 
 var errors = require('../../../common/errors');
 
+import * as modelUser from '../../models/user';
 
-router.post('/completeProfile', function(req, res) {
-    throw new errors.ValidationError('my emotions!');
+
+router.post('/completeProfile', function (req, res) {
+    // TODO must be logged in
+
+    modelUser.completeProfile(req.user, req.body.data, res.apiCallback);
 });
 
 
