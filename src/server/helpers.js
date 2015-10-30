@@ -41,6 +41,16 @@ function attachHelpers(req, res, next) {
         }
     };
 
+    res.apiPromise = function (promise) {
+        promise
+            .then(function (data) {
+                res.apiSuccess(data);
+            })
+            .catch(function (err) {
+                res.apiFailure(err);
+            })
+    };
+
     next();
 }
 
