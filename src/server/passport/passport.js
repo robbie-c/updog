@@ -7,9 +7,15 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('../../config');
 import User from '../models/user';
 
+var initializedPassports = new Set();
 
 // expose this function to our app using module.exports
 module.exports = function (passport) {
+    if (initializedPassports.has(passport)) {
+        return;
+    }
+    initializedPassports.add(passport);
+
     passport.serializeUser(function (user, done) {
         done(null, user.id);
     });

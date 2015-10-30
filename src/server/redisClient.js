@@ -1,4 +1,6 @@
+var session = require('express-session');
 var redis = require('redis');
+var RedisStore = require('connect-redis')(session);
 
 var config = require('../config');
 
@@ -14,4 +16,11 @@ redisClient.on('error', function (err) {
     console.error('Redis error: ' + err);
 });
 
-module.exports = redisClient;
+var redisStore = new RedisStore({
+    client: redisClient
+});
+
+module.exports = {
+    client: redisClient,
+    store: redisStore
+};

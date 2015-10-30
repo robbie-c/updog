@@ -6,7 +6,6 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
-var RedisStore = require('connect-redis')(session);
 
 var helpers = require('./helpers');
 
@@ -44,9 +43,7 @@ app.use(helpers);
 
 require('./passport/passport')(passport);
 app.use(session({
-    store: new RedisStore({
-        client: redisClient
-    }),
+    store: redisClient.store,
     secret: config.sessionSecret,
     resave: true,
     saveUninitialized: true

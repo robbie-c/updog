@@ -1,8 +1,17 @@
+var session = require("express-session");
 var socketIO = require('socket.io');
+var passport = require('passport');
+require('./passport/passport')(passport);
 
-if (typeof localStorage !== 'undefined') {
-    localStorage.debug = '*';
-}
+var config = require('../config');
+var redisClient = require('./redisClient');
+
+var sessionMiddleware = session({
+    store: redisClient.store,
+    secret: config.sessionSecret,
+    resave: true,
+    saveUninitialized: true
+});
 
 function noOp() {
 }
@@ -10,7 +19,23 @@ function noOp() {
 function setUpSignalling(server) {
     var io = socketIO.listen(server);
 
+    io.use(function(socket, next) {
+        sessionMiddleware(socket.request, socket.request.res, next);
+    });
+    io.use(function(socket, next) {
+        passport.initialize()(socket.request, socket.request.res, next);
+    });
+    io.use(function(socket, next) {
+        passport.session()(socket.request, socket.request.res, next);
+    });
+    io.use(function(socket, next) {
+        socket.session = socket.request.session;
+        socket.user = socket.request.user;
+        next();
+    });
+
     io.on('connection', function (client) {
+
         client.resources = {
             audio: true,
             video: false,
