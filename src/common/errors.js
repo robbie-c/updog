@@ -102,17 +102,12 @@ class ValidationError extends UserError {
     }
 
     serialize() {
-
-        var errorRaw = {
+        return {
             type: this.constructor.name,
             i18nKey: this.i18nKey,
             i18nData: this.i18nData,
             what: this.what
         };
-
-        console.log('Using VE ser', errorRaw);
-
-        return errorRaw;
     }
 
     static deserialize(errorRaw) {
