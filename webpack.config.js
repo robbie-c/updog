@@ -28,7 +28,9 @@ var config = {
 
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.IgnorePlugin(/winston/)
+        new webpack.IgnorePlugin(/winston/),
+        new webpack.PrefetchPlugin("react"),
+        new webpack.PrefetchPlugin("react/lib/ReactComponentBrowserEnvironment")
     ],
 
     resolve: {
@@ -55,7 +57,13 @@ var config = {
             },
             {
                 test: /\.jsx?$/,
-                loader: 'babel-loader'
+                loader: 'babel',
+                query: {
+                    presets: [
+                        'react',
+                        'es2015'
+                    ]
+                }
             }
         ]
     }
@@ -69,11 +77,9 @@ var clientConfig = _.merge({}, config, {
     externals: {
         jquery: 'jQuery',
         react: 'React',
-        simplewebrtc: 'SimpleWebRTC',
         io: 'io',
         q: 'Q',
         underscore: '_'
-
     },
     target: 'web',
     plugins: config.plugins.concat(

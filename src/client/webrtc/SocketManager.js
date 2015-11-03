@@ -7,7 +7,7 @@ var _ = require('underscore');
 
 var logger = require('../../common/logger');
 
-export default class SocketManager extends UniversalEvents {
+class SocketManager extends UniversalEvents {
     /**
      *
      * @param {ChatManager} parentChatManager
@@ -47,26 +47,26 @@ export default class SocketManager extends UniversalEvents {
             socket.emit('join', self.parentChatManager.config.roomName, function (roomData) {
                 logger.info('room joined');
                 self._roomDataCache = roomData;
-                super.emit('roomJoined', roomData);
+                self.emit('roomJoined', roomData);
             });
 
             logger.info('mySocketId', serverData.mySocketId);
 
-            super.emit('socketConnected', serverData);
+            self.emit('socketConnected', serverData);
         });
 
         socket.on('room data', function (roomData) {
             if (!_.isEqual(roomData, self._roomDataCache)) {
                 logger.info('room data changed', roomData, self._roomDataCache);
                 self._roomDataCache = roomData;
-                super.emit('roomDataChanged', roomData);
+                self.emit('roomDataChanged', roomData);
             } else {
                 logger.info('room data not changed');
             }
         });
 
         socket.on('webrtc peer message', function (message) {
-            super.emit('webrtc peer message', message);
+            self.emit('webrtc peer message', message);
         })
     }
 
@@ -74,3 +74,5 @@ export default class SocketManager extends UniversalEvents {
         this.socket.emit('webrtc peer message', message);
     }
 }
+
+export default SocketManager;

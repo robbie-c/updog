@@ -17,7 +17,6 @@ var indexRouter = require('./routes/index');
 var roomsRouter = require('./routes/rooms');
 var apiRouter = require('./routes/api/index');
 
-
 var redisClient = require('./redisClient');
 
 mongoose.connect(config.mongo.url, {}, function (err) {
@@ -72,7 +71,7 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        logger.info(err);
+        logger.error(err);
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -84,6 +83,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
+    logger.error(err);
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,

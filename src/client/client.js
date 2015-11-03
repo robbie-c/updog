@@ -8,6 +8,7 @@ require('./polyfills');
 var logger = require('../common/logger');
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var componentRegistry = require('../components/registry');
 
@@ -18,6 +19,6 @@ var props = window.robbie.props;
 
 var element = React.createElement(componentRegistry[reactType], props);
 
-React.render(element, mountNode, function () {
+ReactDOM.render(element, mountNode, function () {
     logger.info('done');
 });

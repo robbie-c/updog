@@ -1,6 +1,8 @@
 var componentRegistry = require('../components/registry');
 var React = require('react');
+var ReactDOMServer = require('react-dom/server');
 
+var errors = require('../common/errors');
 var logger = require('../common/logger');
 
 function attachHelpers(req, res, next) {
@@ -12,6 +14,7 @@ function attachHelpers(req, res, next) {
 
         res.render('page', {
             React: React,
+            ReactDOMServer: ReactDOMServer,
             title: title,
             component: component,
             reactType: reactClassName,
@@ -27,6 +30,7 @@ function attachHelpers(req, res, next) {
     };
 
     res.apiFailure = function (err) {
+        logger.error(err);
         res.json({
             status: 'failure',
             error: errors.serializeError(err)

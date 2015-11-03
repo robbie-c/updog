@@ -21,4 +21,4 @@ var clientLogDumpSchema = mongoose.Schema({
 
 var ClientLogDump = mongoose.model('ClientLogDump', clientLogDumpSchema);
 
-export default ClientLogDump;
+module.exports = ClientLogDump;

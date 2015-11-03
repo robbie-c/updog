@@ -60,8 +60,6 @@ router.post('/log', function (req, res) {
         referrer: req.get('Referrer')
     });
 
-    logger.log(clientLogDump);
-
     clientLogDump.save(res.apiCallback);
 });
 

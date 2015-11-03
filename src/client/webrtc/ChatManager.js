@@ -20,7 +20,7 @@ var defaultConfig = {
     roomName: url.getRoomNameFromURL() || 'defaultRoom'
 };
 
-export default class ChatManager {
+class ChatManager {
     constructor(config) {
         this.config = _.extend({}, defaultConfig, config || {}); // TODO might want a deep merge?
         this.peerConnectionConfig = null;
@@ -118,5 +118,6 @@ export default class ChatManager {
             peerSocketId: peerSocketId
         })
     }
-
 }
+
+module.exports = ChatManager;
