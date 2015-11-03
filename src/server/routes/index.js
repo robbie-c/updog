@@ -4,7 +4,7 @@ var passport = require('passport');
 
 var helpers = require('./helpers');
 var isLoggedIn = helpers.isLoggedIn;
-var ClientLogDump = require('../models/ClientLogDump');
+var ClientLogDump = require('../models/clientLogDump');
 
 var logger = require('../../common/logger');
 
