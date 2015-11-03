@@ -5,6 +5,8 @@
 // add all our polyfills first, so that any later code can rely on them
 require('./polyfills');
 
+var logger = require('../common/logger');
+
 var React = require('react');
 
 var componentRegistry = require('../components/registry');
@@ -17,5 +19,5 @@ var props = window.robbie.props;
 var element = React.createElement(componentRegistry[reactType], props);
 
 React.render(element, mountNode, function () {
-    console.log('done');
+    logger.info('done');
 });

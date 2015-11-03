@@ -1,6 +1,10 @@
+var logger = require('../common/logger');
+
+var config = require('../config');
+
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+var requestLogger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -13,14 +17,14 @@ var indexRouter = require('./routes/index');
 var roomsRouter = require('./routes/rooms');
 var apiRouter = require('./routes/api/index');
 
-var config = require('../config');
+
 var redisClient = require('./redisClient');
 
 mongoose.connect(config.mongo.url, {}, function (err) {
     if (err) {
-        console.log(err)
+        logger.info(err)
     } else {
-        console.log('Mongoose connected and authenticated');
+        logger.info('Mongoose connected and authenticated');
     }
 });
 
@@ -32,8 +36,8 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /static
 //app.use(favicon(path.join(__dirname, 'static', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
+app.use(requestLogger('dev'));
+app.use(bodyParser.json({type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'static')));
@@ -68,7 +72,7 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        console.log(err);
+        logger.info(err);
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,

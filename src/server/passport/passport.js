@@ -3,6 +3,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
+var logger = require('../../common/logger');
 
 var config = require('../../config');
 import User from '../models/user';
@@ -86,13 +87,13 @@ module.exports = function (passport) {
 
                     // if no user is found, return the message
                     if (!user) {
-                        console.log('No user found');
+                        logger.info('No user found');
                         return done(null, false);
                     }
 
                     // if the user is found but the password is wrong
                     if (!user.validPassword(password)) {
-                        console.log('Password wrong');
+                        logger.info('Password wrong');
                         return done(null, false);
                     }
 

@@ -27,7 +27,8 @@ var config = {
     },
 
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin()
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.IgnorePlugin(/winston/)
     ],
 
     resolve: {

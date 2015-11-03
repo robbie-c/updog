@@ -1,6 +1,8 @@
 var React = require('react');
 var _ = require('underscore');
 
+var logger = require('../common/logger');
+
 if (typeof window !== 'undefined') {
     var ChatManager = require('../client/webrtc/ChatManager');
 }
@@ -18,8 +20,8 @@ var VideoArea = React.createClass({
 
     render: function () {
         var self = this;
-        console.log('participants', this.state.participants);
-        console.log('streams', this.state.streams);
+        logger.info('participants', this.state.participants);
+        logger.info('streams', this.state.streams);
 
         return (
             <div>
@@ -72,7 +74,7 @@ var VideoArea = React.createClass({
             self.setState({participants: roomData.participants});
         });
 
-        console.log('chatManager started');
+        logger.info('chatManager started');
 
         // TODO do this on a button click, right now doesn't actually work
         this.startRealTimeAV();
@@ -84,14 +86,14 @@ var VideoArea = React.createClass({
         this.chatManager.startRealTimeAV();
 
         this.chatManager.events.on('localMediaStarted', function (stream) {
-            console.log('local media stream', stream);
+            logger.info('local media stream', stream);
             self.localVideo.src = window.URL.createObjectURL(stream);
         });
 
         this.chatManager.events.on('remoteStreamAdded', function (data) {
             var peerSocketId = data.peerSocketId;
             var stream = data.stream;
-            console.log(peerSocketId, stream);
+            logger.info(peerSocketId, stream);
 
             var oldStreams = self.state.streams;
 
@@ -99,8 +101,8 @@ var VideoArea = React.createClass({
             newStreamObj[peerSocketId] = stream;
             var newStreams = _.extend(newStreamObj, oldStreams);
 
-            console.log('oldStreams', oldStreams);
-            console.log('newStreams', newStreams);
+            logger.info('oldStreams', oldStreams);
+            logger.info('newStreams', newStreams);
             self.setState({
                 streams: newStreams
             })
@@ -108,15 +110,15 @@ var VideoArea = React.createClass({
 
         this.chatManager.events.on('remoteStreamRemoved', function (data) {
             var peerSocketId = data.peerSocketId;
-            console.log('remove stream from call area', peerSocketId);
+            logger.info('remove stream from call area', peerSocketId);
 
             var oldStreams = self.state.streams;
 
             var newStreamObj = _.extend({}, oldStreams);
             delete newStreamObj[peerSocketId];
 
-            console.log('oldStreams', oldStreams);
-            console.log('newStreams', newStreamObj);
+            logger.info('oldStreams', oldStreams);
+            logger.info('newStreams', newStreamObj);
             self.setState({
                 streams: newStreamObj
             })

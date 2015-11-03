@@ -1,12 +1,14 @@
+var logger = require('../../common/logger');
+
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         if (!req.user.displayName && req.url != '/completeprofile') {
             // user needs to finish off their profile
-            console.log('user needs to complete profile');
+            logger.info('user needs to complete profile');
             return res.redirect('/completeprofile');
         } else {
             // logged in, do whatever we wanted to do
-            console.log('user profile already completed');
+            logger.info('user profile already completed');
             return next();
         }
     } else {

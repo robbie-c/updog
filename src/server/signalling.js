@@ -3,6 +3,8 @@ var socketIO = require('socket.io');
 var passport = require('passport');
 require('./passport/passport')(passport);
 
+var logger = require('../common/logger');
+
 var config = require('../config');
 var redisClient = require('./redisClient');
 
@@ -46,24 +48,24 @@ function setUpSignalling(server) {
             if (!details) return;
 
             if (!details.to) {
-                console.log('no to field specified!');
+                logger.info('no to field specified!');
                 return
             }
 
             if (!client.room) {
-                console.log('client not in a room!');
+                logger.info('client not in a room!');
                 return
             }
 
             var otherClient = io.sockets.adapter.nsp.connected[details.to];
             if (!otherClient) {
-                console.log('couldnt find other client');
+                logger.info('couldnt find other client');
                 return;
             }
 
             // ensure they are in the same room
             if (!client.room || client.room !== otherClient.room) {
-                console.log('wrong room');
+                logger.info('wrong room');
                 return;
             }
 
@@ -82,7 +84,7 @@ function setUpSignalling(server) {
 
         client.on('join', function (name, cb = noOp) {
 
-            console.log('join');
+            logger.info('join');
 
             // TODO check that name is sane
             client.join(name);
@@ -96,7 +98,7 @@ function setUpSignalling(server) {
         });
 
         client.on('trace', function (data) {
-            console.log('trace', JSON.stringify(
+            logger.info('trace', JSON.stringify(
                 [data.type, data.session, data.prefix, data.peer, data.time, data.value]
             ));
         });

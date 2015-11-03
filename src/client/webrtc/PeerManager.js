@@ -18,6 +18,8 @@ window.RTCPeerConnection = (
     window.webkitRTCPeerConnection
 );
 
+var logger = require('../../common/logger');
+
 var setFunctions = require('set-functions');
 
 function shouldBeCaller(mySocketId, peerSocketId) {
@@ -39,7 +41,7 @@ class Peer {
         this.peerSocketId = peerSocketId;
 
         this.isCaller = shouldBeCaller(parentPeerManager.parentChatManager.mySocketId, peerSocketId);
-        console.log('isCaller', this.isCaller);
+        logger.info('isCaller', this.isCaller);
 
         this.peerConnection = null;
         this.peerConnectionConfig = this.parentPeerManager.parentChatManager.peerConnectionConfig;
@@ -59,7 +61,7 @@ class Peer {
     start() {
         var self = this;
 
-        console.log('peer config', this.peerConnectionConfig);
+        logger.info('peer config', this.peerConnectionConfig);
         this.peerConnection = new RTCPeerConnection(this.peerConnectionConfig);
         var pc = this.peerConnection;
 
@@ -70,16 +72,16 @@ class Peer {
         };
 
         pc.onaddstream = function (evt) {
-            console.log('got remote stream', evt.stream);
+            logger.info('got remote stream', evt.stream);
             self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
         };
 
         pc.onremovestream = function (evt) {
-            console.log('stream removed!', evt.stream);
+            logger.info('stream removed!', evt.stream);
         };
 
         pc.onsignalingstatechange = function () {
-            console.log('onsignalingstatechange event detected!', pc.signalingState);
+            logger.info('onsignalingstatechange event detected!', pc.signalingState);
 
             if (pc.signalingState === 'closed') {
                 self.end();
@@ -88,28 +90,28 @@ class Peer {
         };
 
         if (this.isCaller) {
-            console.log('await local media for peer', this.peerSocketId);
+            logger.info('await local media for peer', this.peerSocketId);
             this.streamPromise.then((stream) => {
-                console.log('got local media for peer', stream);
+                logger.info('got local media for peer', stream);
                 pc.addStream(stream);
                 pc.createOffer(function (offer) {
                     self._gotLocalDescription(offer);
                 }, function (err) {
-                    console.log('failed to create offer', err)
+                    logger.info('failed to create offer', err)
                 }, self.offerOptions);
             });
         }
     }
 
     end() {
-        console.log('ending connection to', this.peerSocketId);
+        logger.info('ending connection to', this.peerSocketId);
         if (this.peerConnection && this.peerConnection.signalingState !== 'closed') {
             this.peerConnection.close();
         }
     }
 
     _receiveIceCandidateMessage(message) {
-        console.log('ice');
+        logger.info('ice');
 
         var candidate = new RTCIceCandidate(message.iceCandidate);
         this.peerConnection.addIceCandidate(candidate);
@@ -124,7 +126,7 @@ class Peer {
     _receiveSessionDescriptionMessage(message) {
         var pc = this.peerConnection;
 
-        console.log('got session description');
+        logger.info('got session description');
         var description = new RTCSessionDescription(message.sessionDescription);
         pc.setRemoteDescription(description);
 
@@ -142,14 +144,14 @@ class Peer {
         if (this.hasSdp) {
             if (!this.hasMadeReply) {
                 this.hasMadeReply = true;
-                console.log('awaiting local media to reply to peer', this.peerSocketId);
+                logger.info('awaiting local media to reply to peer', this.peerSocketId);
                 this.streamPromise.then((stream) => {
-                    console.log('got local media for peer', stream);
+                    logger.info('got local media for peer', stream);
                     pc.addStream(stream);
                     pc.createAnswer(function (answer) {
                         self._gotLocalDescription(answer);
                     }, function (err) {
-                        console.log('error in creating answer', err);
+                        logger.info('error in creating answer', err);
                     });
                 });
             }
@@ -160,14 +162,14 @@ class Peer {
         var self = this;
         var pc = this.peerConnection;
 
-        console.log('got local description', description);
+        logger.info('got local description', description);
 
         pc.setLocalDescription(description, function () {
             self.sendPeerMessage({
                 sessionDescription: description
             });
         }, function () {
-            console.log('set local description failed')
+            logger.info('set local description failed')
 
         });
     }
@@ -227,7 +229,7 @@ export default class PeerManager {
 
         this.participants = newParticipants;
 
-        console.log('updated participants', this.participants);
+        logger.info('updated participants', this.participants);
     }
 
     sendMessage(message) {
@@ -240,16 +242,16 @@ export default class PeerManager {
             if (peer) {
                 peer.receivePeerMessage(message.content);
             } else {
-                console.log('could not find peer', message.from, this.peers);
+                logger.info('could not find peer', message.from, this.peers);
             }
         }
     }
 
     handleAddedParticipants(addedParticipants) {
-        console.log('handle added participants');
+        logger.info('handle added participants');
         for (var peerId in addedParticipants) {
             if (addedParticipants.hasOwnProperty(peerId)) {
-                console.log('new peer', peerId);
+                logger.info('new peer', peerId);
                 var peer = new Peer(this, peerId);
                 this.peers[peerId] = peer;
                 peer.start();
@@ -258,10 +260,10 @@ export default class PeerManager {
     }
 
     handleRemovedParticipants(removedParticipants) {
-        console.log('handle removed participants');
+        logger.info('handle removed participants');
         for (var peerSocketId in removedParticipants) {
             if (removedParticipants.hasOwnProperty(peerSocketId)) {
-                console.log('remove peer', peerSocketId);
+                logger.info('remove peer', peerSocketId);
                 var peer = this.peers[peerSocketId];
                 if (peer) {
                     peer.end();

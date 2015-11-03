@@ -1,9 +1,11 @@
 var os = require('os');
 var merge = require('deepmerge');
 
+var logger = require('./common/logger');
+
 var hostname = os.hostname();
 
-console.log('loading config for', hostname);
+logger.info('loading config for', hostname);
 
 var config = {
     sessionSecret: 'dOvgrWZJBeB41k72HAinaFRTRC3fc5ix',

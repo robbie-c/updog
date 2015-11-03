@@ -51,7 +51,7 @@ var CompleteProfileForm = React.createClass({
                 });
             })
             .catch(function (err) {
-                console.log('got err', err.constructor.name, err);
+                logger.info('got err', err.constructor.name, err);
                 if (err instanceof errors.ValidationError) {
                     switch (err.what) {
                         case 'displayName':

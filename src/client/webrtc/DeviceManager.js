@@ -2,6 +2,8 @@
 
 import UniversalEvents from 'universalevents';
 
+var logger = require('../../common/logger');
+
 export default class DeviceManager {
 
     /**
@@ -21,11 +23,11 @@ export default class DeviceManager {
     requestAudioAndVideo() {
         var self = this;
 
-        console.log('request audio and video');
+        logger.info('request audio and video');
         var events = this.events;
 
         if (this.stream) {
-            console.log('already got the stream');
+            logger.info('already got the stream');
             return Promise.resolve(this.stream);
         }
 
@@ -39,7 +41,7 @@ export default class DeviceManager {
                     video: true
                 },
                 function (stream) {
-                    console.log('got the local stream at device manager', stream);
+                    logger.info('got the local stream at device manager', stream);
                     self.stream = stream;
                     events.emit('audioAndVideoAccepted', stream);
                 },

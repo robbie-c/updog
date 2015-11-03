@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
+var logger = require('../../common/logger');
+
 router.get('/:roomName', function (req, res) {
 
     var roomName = req.params['roomName'];
 
-    console.log(req.params);
+    logger.info(req.params);
 
     // TODO check that room is real, and user can see it
 

@@ -5,6 +5,8 @@ import UniversalEvents from 'universalevents';
 var io = require('io');
 var _ = require('underscore');
 
+var logger = require('../../common/logger');
+
 export default class SocketManager extends UniversalEvents {
     /**
      *
@@ -33,33 +35,33 @@ export default class SocketManager extends UniversalEvents {
         var socket = this.socket = io(this.parentChatManager.config.url);
 
         socket.on('connect', function (data) {
-            console.log(data);
-            console.log('connected');
+            logger.info(data);
+            logger.info('connected');
         });
 
         socket.on('start', function (serverData) {
-            console.log('start socket');
+            logger.info('start socket');
 
             self.connected = true;
 
             socket.emit('join', self.parentChatManager.config.roomName, function (roomData) {
-                console.log('room joined');
+                logger.info('room joined');
                 self._roomDataCache = roomData;
                 super.emit('roomJoined', roomData);
             });
 
-            console.log('mySocketId', serverData.mySocketId);
+            logger.info('mySocketId', serverData.mySocketId);
 
             super.emit('socketConnected', serverData);
         });
 
         socket.on('room data', function (roomData) {
             if (!_.isEqual(roomData, self._roomDataCache)) {
-                console.log('room data changed', roomData, self._roomDataCache);
+                logger.info('room data changed', roomData, self._roomDataCache);
                 self._roomDataCache = roomData;
                 super.emit('roomDataChanged', roomData);
             } else {
-                console.log('room data not changed');
+                logger.info('room data not changed');
             }
         });
 

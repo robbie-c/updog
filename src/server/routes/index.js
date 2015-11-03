@@ -4,6 +4,9 @@ var passport = require('passport');
 
 var helpers = require('./helpers');
 var isLoggedIn = helpers.isLoggedIn;
+var ClientLogDump = require('../models/ClientLogDump');
+
+var logger = require('../../common/logger');
 
 router.get('/', function (req, res) {
     res.reactRender('UpDog', 'IndexPage');
@@ -49,5 +52,17 @@ router.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
+router.post('/log', function (req, res) {
+    var clientLogDump = new ClientLogDump({
+        logs: req.body.logs,
+        userId: req.user ? req.user._id : null,
+        serverTimestamp: Date.now(),
+        referrer: req.get('Referrer')
+    });
+
+    logger.log(clientLogDump);
+
+    clientLogDump.save(res.apiCallback);
+});
 
 module.exports = router;

@@ -1,5 +1,6 @@
 var httpStatus = require('http-status');
 
+var logger = require('../common/logger');
 
 function deserializeError(rawError) {
     if (rawError.type) {
@@ -21,7 +22,7 @@ function deserializeError(rawError) {
 
 function serializeError(errorObj) {
 
-    console.log(errorObj);
+    logger.info(errorObj);
 
     if (errorObj.isBrowserVisible && errorObj.serialize) {
         return errorObj.serialize();

@@ -1,14 +1,14 @@
 var componentRegistry = require('../components/registry');
 var React = require('react');
 
+var logger = require('../common/logger');
+
 function attachHelpers(req, res, next) {
     res.reactRender = function (title, reactClassName, props) {
 
         props = props || {};
 
         var component = React.createElement(componentRegistry[reactClassName], props);
-
-        console.log(component);
 
         res.render('page', {
             React: React,

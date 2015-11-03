@@ -1,5 +1,7 @@
 var React = require('react');
 
+var logger = require('../common/logger');
+
 var RemoteVideo = React.createClass({
 
     render: function () {
@@ -12,13 +14,13 @@ var RemoteVideo = React.createClass({
 
     attachStreamToVideo: function (videoReact) {
         if (videoReact != null) {
-            console.log('rendering video', this.props.stream);
+            logger.info('rendering video', this.props.stream);
 
             var url = URL.createObjectURL(this.props.stream);
-            console.log('url', url);
+            logger.info('url', url);
 
             var videoDOM = videoReact.getDOMNode();
-            console.log('videoDOM', videoDOM);
+            logger.info('videoDOM', videoDOM);
 
             videoDOM.src = url;
             videoDOM.onloadedmetadata = function () {

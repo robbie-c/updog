@@ -11,6 +11,8 @@ var url = require('../url');
 
 var _ = require('underscore');
 
+var logger = require('../../common/logger');
+
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
 
 var defaultConfig = {
@@ -52,7 +54,7 @@ export default class ChatManager {
         this.socketManager.start();
 
         this.socketManager.on('socketConnected', function (serverData) {
-            console.log('server data', serverData);
+            logger.info('server data', serverData);
             self.peerConnectionConfig = serverData.peerConnectionConfig;
             self.mySocketId = serverData.mySocketId;
         });
@@ -64,7 +66,7 @@ export default class ChatManager {
 
         this.socketManager.on('roomDataChanged', function (roomData) {
             self.roomData = roomData;
-            console.log('roomData changed', roomData);
+            logger.info('roomData changed', roomData);
             self.peerManager.updateParticipants(roomData.participants);
             self.events.emit('roomDataChanged', roomData);
         });
@@ -97,7 +99,7 @@ export default class ChatManager {
             this.start();
         }
 
-        console.log('start text chat');
+        logger.info('start text chat');
     }
 
     sendWebRTCPeerMessage(message) {
