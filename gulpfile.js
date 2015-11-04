@@ -67,12 +67,26 @@ gulp.task('bundle', function (cb) {
 
 // Build the app from source code
 gulp.task('build:incremental', function (cb) {
-    runSequence(['bundle'], cb);
+    runSequence(['bundle', 'vendor'], cb);
 });
 
 // Build the app from source code
 gulp.task('build', ['clean'], function (cb) {
-    runSequence(['bundle'], cb);
+    runSequence(['bundle', 'vendor'], cb);
+});
+
+gulp.task('vendor', function () {
+    var node_modules = path.join(__dirname, 'node_modules');
+
+    var vendor = [
+        path.join(node_modules, 'jquery', 'dist', 'jquery.min?(.js|.map)'),
+        path.join(node_modules, 'underscore', 'underscore-min?(.js|.map)*'),
+        path.join(node_modules, 'react', 'dist', 'react.min.js*'),
+        path.join(node_modules, 'react-dom', 'dist', 'react-dom.min.js*')
+    ];
+
+    return gulp.src(vendor)
+        .pipe(gulp.dest('build/client/vendor'))
 });
 
 // Build and start watching for modifications

@@ -77,8 +77,8 @@ var clientConfig = _.merge({}, config, {
     externals: {
         jquery: 'jQuery',
         react: 'React',
+        'react-dom': 'ReactDOM',
         io: 'io',
-        q: 'Q',
         underscore: '_'
     },
     target: 'web',

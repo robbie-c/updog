@@ -4,14 +4,6 @@ html
         title= title
         link(rel='stylesheet', href='/stylesheets/style.css')
 
-        // TODO serve these locally
-        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/6.0.20/browser.min.js')
-        script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.4.min.js')
-        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/react/0.14.2/react.js')
-        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/react/0.14.2/react-dom.js')
-        script(type='text/javascript', src='/socket.io/socket.io.js')
-        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js')
-        script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js')
     body
         .react-mount-node
             != ReactDOMServer.renderToString(component)
@@ -20,5 +12,11 @@ html
             window.robbie = {};
             window.robbie.reactType = "!{reactType}";
             window.robbie.props = !{JSON.stringify(props)};
+
+        script(type='text/javascript', src='/vendor/jquery.min.js')
+        script(type='text/javascript', src='/vendor/underscore-min.js')
+        script(type='text/javascript', src='/vendor/react.min.js')
+        script(type='text/javascript', src='/vendor/react-dom.min.js')
+        script(type='text/javascript', src='/socket.io/socket.io.js')
         script(type='text/javascript', src='/client.js')
 
