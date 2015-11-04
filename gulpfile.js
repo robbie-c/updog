@@ -78,6 +78,8 @@ gulp.task('vendor', function () {
     var node_modules = path.join(__dirname, 'node_modules');
 
     var vendor = [
+        path.join(node_modules, 'bootstrap', 'dist', 'js', 'bootstrap?(.js|.min.js|.min.map)'),
+        path.join(node_modules, 'bootstrap', 'dist', 'css', 'bootstrap?(.css|.min.css|.css.map)'),
         path.join(node_modules, 'jquery', 'dist', 'jquery?(.js|.min.js|.min.map)'),
         path.join(node_modules, 'underscore', 'underscore-min?(.js|.min.js|.min.map)'),
         path.join(node_modules, 'react', 'dist', 'react.min.js*'),

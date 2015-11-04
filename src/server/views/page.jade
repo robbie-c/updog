@@ -2,6 +2,7 @@ doctype html
 html
     head
         title= title
+        link(rel='stylesheet', href='/vendor/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
 
     body
@@ -14,6 +15,7 @@ html
             window.robbie.props = !{JSON.stringify(props)};
 
         script(type='text/javascript', src='/vendor/jquery.min.js')
+        script(type='text/javascript', src='/vendor/bootstrap.min.js')
         script(type='text/javascript', src='/vendor/underscore-min.js')
         script(type='text/javascript', src='/vendor/react.min.js')
         script(type='text/javascript', src='/vendor/react-dom.min.js')
