@@ -76,7 +76,12 @@ class Peer {
         this._stateChanged();
 
         logger.info('peer config', this.peerConnectionConfig);
-        this.peerConnection = new RTCPeerConnection(this.peerConnectionConfig);
+        this.peerConnection = new RTCPeerConnection(this.peerConnectionConfig, {
+            optional: [
+                {DtlsSrtpKeyAgreement: true},
+                {RtpDataChannels: true}
+            ]
+        });
         var pc = this.peerConnection;
 
         pc.onicecandidate = function (evt) {
