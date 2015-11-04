@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 var mongoose = require('mongoose');
+var favicon = require('serve-favicon');
 
 var helpers = require('./helpers');
 
@@ -34,7 +35,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /static
-//app.use(favicon(path.join(__dirname, 'static', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '..', 'static', 'favicon.ico')));
 app.use(requestLogger('dev'));
 app.use(bodyParser.json({type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
