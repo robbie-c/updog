@@ -62,7 +62,8 @@ var config = {
                     presets: [
                         'react',
                         'es2015'
-                    ]
+                    ],
+                    cacheDirectory: true
                 }
             }
         ]
