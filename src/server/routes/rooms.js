@@ -7,13 +7,13 @@ router.get('/:roomName', function (req, res) {
 
     var roomName = req.params['roomName'];
 
-    logger.info(req.params);
-
     // TODO check that room is real, and user can see it
 
     var props = {
         chatMessages: [], // TODO
-        participants: []
+        participants: [],
+        user: req.user, // TODO sanitized version
+        roomName: roomName
     };
 
     res.reactRender('Chat Room: ' + roomName, 'PermanentCallPage', props);
