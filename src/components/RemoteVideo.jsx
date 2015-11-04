@@ -20,7 +20,6 @@ var RemoteVideo = React.createClass({
             logger.info('url', url);
 
             var videoDOM = videoReact.getDOMNode();
-            logger.info('videoDOM', videoDOM);
 
             videoDOM.src = url;
             videoDOM.onloadedmetadata = function () {
