@@ -10,6 +10,10 @@ function attachHelpers(req, res, next) {
 
         props = props || {};
 
+        if (!props.title) {
+            props.title = title;
+        }
+
         var component = React.createElement(componentRegistry[reactClassName], props);
 
         res.render('page', {
