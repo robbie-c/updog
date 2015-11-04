@@ -53,7 +53,6 @@ gulp.task('bundle', function (cb) {
         return require('child_process')
             .spawn(webpackProcess, ['--config', 'webpack.config.js', '--verbose', '--bail', '--colors'], { stdio: 'inherit' })
             .on('close', function (code) {
-                console.log('code = ' + code);
                 if (code) {
                     exitCode = code;
                     cb(new Error('Webpack failed with exit code: ' + code));
