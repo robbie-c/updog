@@ -21,16 +21,16 @@ function noOp() {
 function setUpSignalling(server) {
     var io = socketIO.listen(server);
 
-    io.use(function(socket, next) {
+    io.use(function (socket, next) {
         sessionMiddleware(socket.request, socket.request.res, next);
     });
-    io.use(function(socket, next) {
+    io.use(function (socket, next) {
         passport.initialize()(socket.request, socket.request.res, next);
     });
-    io.use(function(socket, next) {
+    io.use(function (socket, next) {
         passport.session()(socket.request, socket.request.res, next);
     });
-    io.use(function(socket, next) {
+    io.use(function (socket, next) {
         socket.session = socket.request.session;
         socket.user = socket.request.user;
         next();
