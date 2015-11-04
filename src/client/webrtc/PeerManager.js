@@ -26,7 +26,10 @@ function shouldBeCaller(mySocketId, peerSocketId) {
     if (mySocketId == peerSocketId) {
         throw new Error('Identical Ids!');
     }
-    return (mySocketId > peerSocketId);
+    var isCaller = (mySocketId > peerSocketId);
+    logger.log('me', mySocketId, 'peer', peerSocketId, 'isCaller', isCaller);
+    return isCaller;
+
 }
 
 class Peer {
@@ -46,20 +49,31 @@ class Peer {
         this.peerConnection = null;
         this.peerConnectionConfig = this.parentPeerManager.parentChatManager.peerConnectionConfig;
 
-        this.hasAtLeastOneIce = false;
-        this.hasSdp = false;
-        this.hasMadeReply = false;
-
         this.streamPromise = this.parentPeerManager.awaitLocalStream();
 
         this.offerOptions = {
             offerToReceiveAudio: true,
             offerToReceiveVideo: true
-        }
+        };
+
+        this.started = false;
+        this.hasLocalDescription = false;
+        this.hasRemoteDescription = false;
+        this.hasAtLeastOneIce = false;
+        this.startedMakingAnswer = false;
+        this.hasMadeAnswer = false;
+        this.hasRemoteStream = false;
     }
 
     start() {
+        if (this.started) {
+            return;
+        }
+
         var self = this;
+
+        this.started = true;
+        this._stateChanged();
 
         logger.info('peer config', this.peerConnectionConfig);
         this.peerConnection = new RTCPeerConnection(this.peerConnectionConfig);
@@ -73,6 +87,8 @@ class Peer {
 
         pc.onaddstream = function (evt) {
             logger.info('got remote stream', evt.stream);
+            self.hasRemoteStream = true;
+            self._stateChanged();
             self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
         };
 
@@ -130,7 +146,8 @@ class Peer {
         var description = new RTCSessionDescription(message.sessionDescription);
         pc.setRemoteDescription(description);
 
-        this.hasSdp = true;
+        this.hasRemoteDescription = true;
+        this._stateChanged();
 
         if (!this.isCaller) {
             this._makeReplyIfReady()
@@ -141,9 +158,9 @@ class Peer {
         var self = this;
         var pc = this.peerConnection;
 
-        if (this.hasSdp) {
-            if (!this.hasMadeReply) {
-                this.hasMadeReply = true;
+        if (this.hasRemoteDescription) {
+            if (!this.startedMakingAnswer) {
+                this.startedMakingAnswer = true;
                 logger.info('awaiting local media to reply to peer', this.peerSocketId);
                 this.streamPromise.then((stream) => {
                     logger.info('got local media for peer', stream);
@@ -163,6 +180,9 @@ class Peer {
         var pc = this.peerConnection;
 
         logger.info('got local description', description);
+
+        this.hasLocalDescription = true;
+        this._stateChanged();
 
         pc.setLocalDescription(description, function () {
             self.sendPeerMessage({
@@ -187,6 +207,32 @@ class Peer {
             to: this.peerSocketId,
             content: peerMessage
         })
+    }
+
+    getState() {
+        if (!this.started) {
+            return 'Not started';
+        } else if (this.isCaller && !this.hasLocalDescription) {
+            return "(Caller) Waiting to generate local description to send"
+        } else if (this.isCaller && this.hasLocalDescription && !this.hasRemoteDescription) {
+            return "(Caller) Sent offer, waiting for answer"
+        } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && !this.hasRemoteStream) {
+            return "(Caller) Sent offer, got answer, waiting for stream"
+        } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && this.hasRemoteStream) {
+            return "(Caller) Has remote stream"
+        } else if (!this.isCaller && !this.hasRemoteDescription) {
+            return "(Callee) Waiting for offer"
+        } else if (!this.isCaller && this.hasRemoteDescription && !this.hasLocalDescription) {
+            return "(Callee) Has offer, waiting to create answer"
+        } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && !this.hasRemoteStream) {
+            return "(Callee) Has offer, sent answer, waiting for stream"
+        } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && this.hasRemoteStream) {
+            return "(Callee) Has remote stream"
+        }
+    }
+
+    _stateChanged() {
+        this.parentPeerManager.stateChanged();
     }
 
 }
@@ -283,6 +329,20 @@ export default class PeerManager {
 
     removeRemoteStream(peerSocketId) {
         this.parentChatManager.removeRemoteStream(peerSocketId);
+    }
+
+    stateChanged() {
+        this.parentChatManager.peerStateChanged()
+    }
+
+    getState() {
+        var state = {};
+        for (var peerSocketId in this.peers) {
+            if (this.peers.hasOwnProperty(peerSocketId)) {
+                state[peerSocketId] = this.peers[peerSocketId].getState();
+            }
+        }
+        return state;
     }
 }
 

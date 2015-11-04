@@ -37,7 +37,8 @@ class ChatManager {
             'roomJoined',
             'roomDataChanged',
             'remoteStreamAdded',
-            'remoteStreamRemoved'
+            'remoteStreamRemoved',
+            'peerStateChanged'
         ]);
     }
 
@@ -117,6 +118,10 @@ class ChatManager {
         this.events.emit('remoteStreamRemoved', {
             peerSocketId: peerSocketId
         })
+    }
+
+    peerStateChanged() {
+        this.events.emit('peerStateChanged', this.peerManager.getState());
     }
 }
 

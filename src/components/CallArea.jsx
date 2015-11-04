@@ -14,7 +14,8 @@ var VideoArea = React.createClass({
     getInitialState: function () {
         return {
             participants: {},
-            streams: {}
+            streams: {},
+            peerState: {}
         }
     },
 
@@ -22,6 +23,7 @@ var VideoArea = React.createClass({
         var self = this;
         logger.info('participants', this.state.participants);
         logger.info('streams', this.state.streams);
+        logger.info('peerState', this.state.peerState);
 
         return (
             <div>
@@ -51,6 +53,15 @@ var VideoArea = React.createClass({
                         }
                     </ul>
                 </div>
+                <div>
+                    <ul>
+                        {
+                            Object.keys(this.state.peerState).map(function (participantId) {
+                                return (<li key={'peerState-' + participantId}>{participantId + ': ' + self.state.peerState[participantId]}</li>);
+                                })
+                            }
+                    </ul>
+                </div>
 
             </div>
         );
@@ -72,6 +83,10 @@ var VideoArea = React.createClass({
 
         this.chatManager.events.on('roomDataChanged', function (roomData) {
             self.setState({participants: roomData.participants});
+        });
+
+        this.chatManager.events.on('peerStateChanged', function(state) {
+            self.setState({peerState: state});
         });
 
         logger.info('chatManager started');
