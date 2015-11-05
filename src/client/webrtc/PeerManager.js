@@ -26,10 +26,7 @@ function shouldBeCaller(mySocketId, peerSocketId) {
     if (mySocketId == peerSocketId) {
         throw new Error('Identical Ids!');
     }
-    var isCaller = (mySocketId > peerSocketId);
-    logger.log('me', mySocketId, 'peer', peerSocketId, 'isCaller', isCaller);
-    return isCaller;
-
+    return mySocketId > peerSocketId;
 }
 
 class Peer {
