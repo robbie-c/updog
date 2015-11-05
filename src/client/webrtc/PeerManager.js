@@ -50,7 +50,7 @@ class Peer {
 
         this.offerOptions = {
             offerToReceiveAudio: true,
-            offerToReceiveVideo: true
+            offerToReceiveVideo: false // TODO temporary hack
         };
 
         this.started = false;
