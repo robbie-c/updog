@@ -82,6 +82,7 @@ class Peer {
         var pc = this.peerConnection;
 
         pc.onicecandidate = function (evt) {
+            logger.info('local ice', evt.candidate);
             self.sendPeerMessage({
                 iceCandidate: evt.candidate
             });
@@ -134,7 +135,7 @@ class Peer {
     }
 
     _receiveIceCandidateMessage(message) {
-        logger.info('ice');
+        logger.info('remote ice', message.iceCandidate);
 
         var candidate = new RTCIceCandidate(message.iceCandidate);
         this.peerConnection.addIceCandidate(candidate);
