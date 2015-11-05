@@ -87,6 +87,7 @@ class Peer {
         pc.onicecandidate = function (evt) {
             logger.info('local ice', evt.candidate);
             self.sendPeerMessage({
+                type: 'ice',
                 iceCandidate: evt.candidate
             });
         };
@@ -199,6 +200,7 @@ class Peer {
 
         pc.setLocalDescription(description, function () {
             self.sendPeerMessage({
+                type: 'sdp',
                 sessionDescription: description
             });
         }, function () {
@@ -208,10 +210,13 @@ class Peer {
     }
 
     receivePeerMessage(peerMessage) {
-        if (peerMessage.iceCandidate) {
-            this._receiveIceCandidateMessage(peerMessage);
-        } else if (peerMessage.sessionDescription) {
-            this._receiveSessionDescriptionMessage(peerMessage);
+        switch (peerMessage.type) {
+            case 'ice':
+                this._receiveIceCandidateMessage(peerMessage);
+                break;
+            case 'sdp':
+                this._receiveSessionDescriptionMessage(peerMessage);
+                break;
         }
     }
 
