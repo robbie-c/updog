@@ -86,6 +86,14 @@ class Peer {
 
         pc.onicecandidate = function (evt) {
             logger.info('local ice', evt.candidate);
+
+            if (evt.candidate && evt.candidate.sdpMid === '') {
+                // TODO remove this very dirty hack once this bug is fixed
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1115703
+                evt.candidate.sdpMid = 'sdparta_' + evt.candidate.sdpMLineIndex;
+                logger.info('modified local ice', evt.candidate);
+            }
+
             self.sendPeerMessage({
                 type: 'ice',
                 iceCandidate: evt.candidate
