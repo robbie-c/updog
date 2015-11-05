@@ -60,6 +60,9 @@ class Peer {
         this.startedMakingAnswer = false;
         this.hasMadeAnswer = false;
         this.hasRemoteStream = false;
+
+        this.localDescription = null;
+        this.remoteDescription = null;
     }
 
     start() {
@@ -150,11 +153,12 @@ class Peer {
     _receiveSessionDescriptionMessage(message) {
         var pc = this.peerConnection;
 
-        logger.info('got session description');
         var description = new RTCSessionDescription(message.sessionDescription);
+        logger.info('got session description', description);
         pc.setRemoteDescription(description);
 
         this.hasRemoteDescription = true;
+        this.remoteDescription = description;
         this._stateChanged();
 
         if (!this.isCaller) {
@@ -190,6 +194,7 @@ class Peer {
         logger.info('got local description', description);
 
         this.hasLocalDescription = true;
+        this.localDescription = description;
         this._stateChanged();
 
         pc.setLocalDescription(description, function () {
