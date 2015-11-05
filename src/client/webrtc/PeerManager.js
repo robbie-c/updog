@@ -141,13 +141,15 @@ class Peer {
     _receiveIceCandidateMessage(message) {
         logger.info('remote ice', message.iceCandidate);
 
-        var candidate = new RTCIceCandidate(message.iceCandidate);
-        this.peerConnection.addIceCandidate(candidate);
+        if (message.iceCandidate) {
+            var candidate = new RTCIceCandidate(message.iceCandidate);
+            this.peerConnection.addIceCandidate(candidate);
 
-        this.hasAtLeastOneIce = true;
+            this.hasAtLeastOneIce = true;
 
-        if (!this.isCaller) {
-            this._makeReplyIfReady()
+            if (!this.isCaller) {
+                this._makeReplyIfReady()
+            }
         }
     }
 
