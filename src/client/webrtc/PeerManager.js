@@ -85,18 +85,39 @@ class Peer {
         var pc = this.peerConnection;
 
         pc.onicecandidate = function (evt) {
-            logger.info('local ice', evt.candidate);
+            var candidate = evt.candidate;
 
-            if (evt.candidate && evt.candidate.sdpMid === '') {
-                // TODO remove this very dirty hack once this bug is fixed
-                // https://bugzilla.mozilla.org/show_bug.cgi?id=1115703
-                evt.candidate.sdpMid = 'sdparta_' + evt.candidate.sdpMLineIndex;
-                logger.info('modified local ice', evt.candidate);
+            if (candidate) {
+                candidate = {
+                    candidate: evt.candidate.candidate,
+                    sdpMLineIndex: evt.candidate.sdpMLineIndex,
+                    sdpMid: evt.candidate.sdpMid
+                };
+
+                logger.info('local ice', candidate);
+
+                if (candidate && candidate.sdpMid === '') {
+                    // TODO remove this very dirty hack once this bug is fixed
+                    // https://bugzilla.mozilla.org/show_bug.cgi?id=1115703
+                    switch (candidate.sdpMLineIndex) {
+                        case 0:
+                            if (self.isCaller) {
+                                candidate.sdpMid = 'sdparta_0';
+                            }
+                            break;
+                        case 1:
+                            if (self.isCaller) {
+                                candidate.sdpMid = 'sdparta_1';
+                            }
+                            break;
+                    }
+                    logger.info('modified local ice', candidate);
+                }
             }
 
             self.sendPeerMessage({
                 type: 'ice',
-                iceCandidate: evt.candidate
+                iceCandidate: candidate
             });
         };
 
