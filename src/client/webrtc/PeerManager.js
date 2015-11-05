@@ -107,6 +107,11 @@ class Peer {
             }
         };
 
+        pc.oniceconnectionstatechange = function () {
+            logger.info('ice connection state:', pc.iceConnectionState);
+            self._stateChanged();
+        };
+
         if (this.isCaller) {
             logger.info('await local media for peer', this.peerSocketId);
             this.streamPromise.then((stream) => {
@@ -221,7 +226,7 @@ class Peer {
         } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && !this.hasRemoteStream) {
             return "(Caller) Sent offer, got answer, waiting for stream"
         } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && this.hasRemoteStream) {
-            return "(Caller) Has remote stream"
+            return "(Caller) Has remote stream, ice: " + this.pc.iceConnectionState
         } else if (!this.isCaller && !this.hasRemoteDescription) {
             return "(Callee) Waiting for offer"
         } else if (!this.isCaller && this.hasRemoteDescription && !this.hasLocalDescription) {
@@ -229,7 +234,7 @@ class Peer {
         } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && !this.hasRemoteStream) {
             return "(Callee) Has offer, sent answer, waiting for stream"
         } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && this.hasRemoteStream) {
-            return "(Callee) Has remote stream"
+            return "(Callee) Has remote stream, ice: " + this.pc.iceConnectionState
         }
     }
 
