@@ -226,7 +226,7 @@ class Peer {
         } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && !this.hasRemoteStream) {
             return "(Caller) Sent offer, got answer, waiting for stream"
         } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && this.hasRemoteStream) {
-            return "(Caller) Has remote stream, ice: " + this.pc.iceConnectionState
+            return "(Caller) Has remote stream, ice: " + this.peerConnection.iceConnectionState
         } else if (!this.isCaller && !this.hasRemoteDescription) {
             return "(Callee) Waiting for offer"
         } else if (!this.isCaller && this.hasRemoteDescription && !this.hasLocalDescription) {
@@ -234,7 +234,7 @@ class Peer {
         } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && !this.hasRemoteStream) {
             return "(Callee) Has offer, sent answer, waiting for stream"
         } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && this.hasRemoteStream) {
-            return "(Callee) Has remote stream, ice: " + this.pc.iceConnectionState
+            return "(Callee) Has remote stream, ice: " + this.peerConnection.iceConnectionState
         }
     }
 
