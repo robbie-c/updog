@@ -30,17 +30,23 @@ function serializeError(errorObj) {
 
     var error = {};
 
-    if (errorObj.isBrowserVisible) {
-        error.type = errorObj.__proto__.name;
-        error.message = errorObj.message;
+    if (typeof errorObj === 'number') {
+        // http error code
+        error.status = error;
+        error.message = httpStatus[error];
     } else {
-        error.type = 'Error';
-    }
+        if (errorObj.isBrowserVisible) {
+            error.type = errorObj.__proto__.name;
+            error.message = errorObj.message;
+        } else {
+            error.type = 'Error';
+        }
 
-    error.status = errorObj.status || httpStatus.INTERNAL_SERVER_ERROR;
+        error.status = errorObj.status || httpStatus.INTERNAL_SERVER_ERROR;
 
-    if (!error.message) {
-        error.message = httpStatus[error.status];
+        if (!error.message) {
+            error.message = httpStatus[error.status];
+        }
     }
 
     return error;
