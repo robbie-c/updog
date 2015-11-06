@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 
 var helpers = require('./helpers');
-var isLoggedIn = helpers.isLoggedIn;
+var checkLoggedIn = helpers.checkLoggedIn;
 var ClientLogDump = require('../models/clientLogDump');
 
 var logger = require('../../common/logger');
@@ -39,11 +39,11 @@ router.get('/auth/google/callback',
         failureRedirect: '/'
     }));
 
-router.get('/completeprofile', isLoggedIn, function (req, res) {
+router.get('/completeprofile', checkLoggedIn, function (req, res) {
     res.reactRender('Complete Profile', 'CompleteProfilePage');
 });
 
-router.get('/profile', isLoggedIn, function (req, res) {
+router.get('/profile', checkLoggedIn, function (req, res) {
     res.reactRender('Profile', 'ProfilePage');
 });
 

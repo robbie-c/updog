@@ -1,6 +1,6 @@
 var logger = require('../../common/logger');
 
-function isLoggedIn(req, res, next) {
+function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         if (!req.user.displayName && req.url != '/completeprofile') {
             // user needs to finish off their profile
@@ -19,5 +19,5 @@ function isLoggedIn(req, res, next) {
 }
 
 module.exports = {
-    isLoggedIn: isLoggedIn
+    checkLoggedIn: checkLoggedIn
 };
