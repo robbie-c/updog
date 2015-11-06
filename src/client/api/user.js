@@ -1,4 +1,3 @@
-var $ = require('jquery');
 
 var helpers = require('./helpers');
 var doApiCall = helpers.doApiCall;
