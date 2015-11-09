@@ -12,13 +12,19 @@ router.get('/:roomName', function (req, res, next) {
     Room.findOrCreateDefault(roomName)
         .then(function (room) {
             if (room.canBeAccessedByUser(req.user)) {
-                var props = {
-                    chatMessages: [], // TODO
-                    participants: [],
-                    user: req.user, // TODO sanitized version
-                    room: room // TODO sanitized version
-                };
-                res.reactRender('Chat Room: ' + roomName, 'PermanentCallPage', props);
+                room.sanitiseWithUsers(function (err, roomSanitised) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        var props = {
+                            chatMessages: [], // TODO
+                            participants: [],
+                            user: req.isAuthenticated() && req.user ? req.user.sanitise() : null,
+                            room: roomSanitised
+                        };
+                        res.reactRender('Chat Room: ' + roomName, 'PermanentCallPage', props);
+                    }
+                });
             } else {
                 res.reactRender('Permission Denied: ' + roomName, 'PermissionDeniedPage');
             }

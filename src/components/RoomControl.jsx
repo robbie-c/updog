@@ -23,17 +23,25 @@ var RoomControl = React.createClass({
         logger.log(user, room);
 
         var claimThisRoom = null;
-        if (user && room && !room.ownerUserId) {
+        if (user && room && !room.owner) {
             claimThisRoom = (
                 <form onSubmit={this.handleSubmit}>
                     <button type="submit" disabled={this.state.isAwaitingClaimRoom ? 'disabled' : ''}>Claim this room
                     </button>
                 </form>
             )
+        } else if (room && room.owner) {
+            claimThisRoom = (
+                <p>Room owned by {room.owner.displayName}</p>
+            )
+        } else if (!user && room && !room.owner) {
+            claimThisRoom = (
+                <p>Log in to claim this room</p>
+            )
         }
 
         var ownerControls = null;
-        if (user && room && (room.ownerUserId.toString() === user._id.toString())) {
+        if (user && room && (room.owner._id === user._id)) {
             ownerControls = (
                 <div>
                     <span>Owner controls</span>
