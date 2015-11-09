@@ -31,6 +31,14 @@ var config = {
     }
 };
 
+if (process.env.HOSTNAME) {
+    config = merge(config, {
+        googleAuth: {
+            callbackURL: process.env.HOSTNAME + '/auth/google/callback'
+        }
+    });
+}
+
 if (/saffron/.test(hostname)) {
     config = merge(config, {
         redis: {
