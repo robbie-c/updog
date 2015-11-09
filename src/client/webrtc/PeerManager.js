@@ -50,7 +50,7 @@ class Peer {
 
         this.offerOptions = {
             offerToReceiveAudio: true,
-            offerToReceiveVideo: false // TODO temporary hack
+            offerToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
         };
 
         this.started = false;

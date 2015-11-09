@@ -12,7 +12,8 @@ var RoomControl = React.createClass({
         var room = this.props.room;
         return {
             isAwaitingClaimRoom: false,
-            settingsVideo: room.settings.video
+            settingsVideo: room.settings.video,
+            isAwaitingSettingsVideo: false
         }
     },
 
@@ -45,11 +46,18 @@ var RoomControl = React.createClass({
             ownerControls = (
                 <div>
                     <span>Owner controls</span>
+                    {this.state.isAwaitingSettingsVideo ? (
+                    <div className="form-group">
+                        <span className="fa fa-spinner fa-pulse"/>Video
+                    </div>
+                        ) : (
                     <div className="checkbox">
                         <label>
-                            <input type="checkbox" checked={this.state.settingsVideo} onChange={this.handleChange.bind(this, 'settingsVideo')}/>Video
+                            <input type="checkbox" checked={this.state.settingsVideo}
+                                   onChange={this.handleChange.bind(this, 'settingsVideo')}/>Video
                         </label>
                     </div>
+                        )}
                 </div>
             )
         }
@@ -78,7 +86,14 @@ var RoomControl = React.createClass({
     handleChange: function (what, event) {
         switch (what) {
             case 'settingsVideo':
-                this.setState({settingsVideo: event.target.checked});
+                this.setState({isAwaitingSettingsVideo: true});
+                apiRoom.updateSetting(this.props.room._id, 'video', event.target.checked, function(err, newSettings) {
+                    this.setState({isAwaitingSettingsVideo: false});
+
+                    if (newSettings.video !== undefined) {
+                        this.setState({settingsVideo: newSettings.video});
+                    }
+                }.bind(this));
                 break;
         }
     }

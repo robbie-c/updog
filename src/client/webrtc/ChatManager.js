@@ -17,7 +17,8 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || 
 
 var defaultConfig = {
     url: window.location.origin,
-    roomName: url.getRoomNameFromURL() || 'defaultRoom'
+    roomName: url.getRoomNameFromURL() || 'defaultRoom',
+    video: true
 };
 
 class ChatManager {

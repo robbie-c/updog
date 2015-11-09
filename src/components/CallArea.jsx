@@ -24,6 +24,7 @@ var VideoArea = React.createClass({
         logger.info('participants', this.state.participants);
         logger.info('streams', this.state.streams);
         logger.info('peerState', this.state.peerState);
+        logger.info('room', this.props.room);
 
         return (
             <div>
@@ -43,7 +44,7 @@ var VideoArea = React.createClass({
                     }
                 </div>
                 <h1>Local Video</h1>
-                <video id="localVideo" muted={true}></video>
+                <video id="localVideo" muted={true}/>
                 <div>
                     <ul>
                         {
@@ -74,7 +75,7 @@ var VideoArea = React.createClass({
             self.localVideo.play();
         };
 
-        this.chatManager = new ChatManager();
+        this.chatManager = new ChatManager(this.props.room.settings);
         this.chatManager.startTextChat();
 
         this.chatManager.events.on('roomJoined', function (roomData) {

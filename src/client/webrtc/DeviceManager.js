@@ -38,7 +38,7 @@ export default class DeviceManager {
             navigator.getUserMedia(
                 {
                     audio: true,
-                    video: false // TODO DIRTY HACK
+                    video: this.parentChatManager.config.video
                 },
                 function (stream) {
                     logger.info('got the local stream at device manager', stream);
