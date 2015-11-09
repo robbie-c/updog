@@ -1,10 +1,10 @@
 var React = require('react');
 
-var $ = require('jquery');
-
 var apiUsers = require('../../client/api/user');
 var errors = require('../../common/errors');
 var validationUser = require('../../common/validation/user');
+var logger = require('../../common/logger');
+
 
 var CompleteProfileForm = React.createClass({
 
