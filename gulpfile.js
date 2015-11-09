@@ -9,6 +9,8 @@ var argv = require('minimist')(process.argv.slice(2));
 var path = require('path');
 var nodemon = require('gulp-nodemon');
 var shell = require('gulp-shell');
+var merge = require('merge-stream');
+var preservetime = require('gulp-preservetime');
 
 var watch = false;
 var exitCode = 0;
@@ -80,14 +82,25 @@ gulp.task('vendor', function () {
     var vendor = [
         path.join(node_modules, 'bootstrap', 'dist', 'js', 'bootstrap?(.js|.min.js|.min.map)'),
         path.join(node_modules, 'bootstrap', 'dist', 'css', 'bootstrap?(.css|.min.css|.css.map)'),
+        path.join(node_modules, 'font-awesome', 'css', 'font-awesome?(.css|.min.css|.css.map)'),
         path.join(node_modules, 'jquery', 'dist', 'jquery?(.js|.min.js|.min.map)'),
         path.join(node_modules, 'underscore', 'underscore-min?(.js|.min.js|.min.map)'),
         path.join(node_modules, 'react', 'dist', 'react?(.js|.min.js)'),
         path.join(node_modules, 'react-dom', 'dist', 'react-dom?(.js|.min.js)')
     ];
 
-    return gulp.src(vendor)
-        .pipe(gulp.dest('build/client/vendor'))
+    var fonts = [
+        path.join(node_modules, 'font-awesome', 'fonts', '*')
+    ];
+
+    return merge(
+        gulp.src(vendor)
+            .pipe(gulp.dest('build/client/vendor'))
+            .pipe(preservetime()),
+        gulp.src(fonts)
+            .pipe(gulp.dest('build/client/fonts'))
+            .pipe(preservetime())
+    )
 });
 
 // Build and start watching for modifications
