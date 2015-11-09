@@ -37,6 +37,28 @@ userSchema.methods.isComplete = function () {
     return true;
 };
 
+userSchema.methods.sanitise = function () {
+    return {
+        _id: this._id.toString(),
+        displayName: this.displayName
+    }
+};
+
+userSchema.statics.getSanitised = function (userId, callback) {
+    if (userId) {
+        User.findOne({
+            _id: userId
+        }, function (err, user) {
+            if (user) {
+                user = user.sanitise();
+            }
+            callback(err, user);
+        })
+    } else {
+        callback(null, null);
+    }
+};
+
 var User = mongoose.model('User', userSchema);
 
 export default User;

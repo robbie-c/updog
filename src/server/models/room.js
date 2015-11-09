@@ -1,6 +1,9 @@
 var mongoose = require('mongoose');
+var async = require('async');
 
 var logger = require('../../common/logger');
+
+import User from './user';
 
 var roomSchema = mongoose.Schema({
     _id: String,
@@ -38,6 +41,34 @@ roomSchema.methods.canBeAccessedByUser = function (user) {
     }
 
     return false;
+};
+
+roomSchema.methods.sanitiseWithUsers = function (callback) {
+    async.parallel({
+        owner: function (getOwnerCallback) {
+            console.log('start owner');
+            User.getSanitised(this.ownerUserId, getOwnerCallback);
+        }.bind(this),
+        members: function (getMembersCallback) {
+            console.log('start members');
+            async.map(this.members, function (userInfo, userCallback) {
+                User.getSanitised(userInfo.userId, userCallback)
+            }, getMembersCallback);
+        }.bind(this)
+    }, function (err, results) {
+        console.log('got results');
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, {
+                _id: this._id.toString(),
+                owner: results.owner,
+                members: results.members,
+                isPublic: this.isPublic,
+                settings: this.settings
+            });
+        }
+    }.bind(this));
 };
 
 roomSchema.statics.findOrCreateDefault = function (roomName) {
