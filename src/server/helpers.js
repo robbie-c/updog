@@ -13,6 +13,9 @@ function attachHelpers(req, res, next) {
         if (!props.title) {
             props.title = title;
         }
+        if (!props.user && req.isAuthenticated() && req.user) {
+            props.user = req.user.sanitise();
+        }
 
         var component = React.createElement(componentRegistry[reactClassName], props);
 
