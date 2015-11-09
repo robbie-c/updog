@@ -41,8 +41,7 @@ var User = mongoose.model('User', userSchema);
 
 export default User;
 
-
-export function completeProfile (user, data, callback) {
+export function completeProfile(user, data, callback) {
     if (user.displayName) {
         throw new ValidationError('user.alreadyHasDisplayName', user.displayName, 'displayName');
     }
@@ -55,7 +54,7 @@ export function completeProfile (user, data, callback) {
 
     user.displayName = data.displayName;
 
-    user.save(function(err) {
+    user.save(function (err) {
         if (err) {
             callback(err);
         } else {
