@@ -27,6 +27,8 @@ var LoginPage = React.createClass({
                         </button>
                     </form>
 
+                    <div>Or log in with:</div>
+
                     <a href="/auth/google" className="btn btn-danger"><span className="fa fa-google-plus"/>
                         Google</a>
 
