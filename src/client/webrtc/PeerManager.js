@@ -1,26 +1,7 @@
-/* global RTCSessionDescription, RTCIceCandidate, RTCPeerConnection */
-
-window.RTCSessionDescription = (
-    window.RTCSessionDescription ||
-    window.mozRTCSessionDescription ||
-    window.webkitRTCSessionDescription
-);
-
-window.RTCIceCandidate = (
-    window.RTCIceCandidate ||
-    window.mozRTCIceCandidate ||
-    window.webkitRTCIceCandidate
-);
-
-window.RTCPeerConnection = (
-    window.RTCPeerConnection ||
-    window.mozRTCPeerConnection ||
-    window.webkitRTCPeerConnection
-);
+var setFunctions = require('set-functions');
+var RTCPeerConnection = require('rtcpeerconnection');
 
 var logger = require('../../common/logger');
-
-var setFunctions = require('set-functions');
 
 function shouldBeCaller(mySocketId, peerSocketId) {
     if (mySocketId == peerSocketId) {
@@ -49,28 +30,20 @@ class Peer {
         this.streamPromise = this.parentPeerManager.awaitLocalStream();
 
         this.offerOptions = {
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
+            mandatory: {
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
+            }
         };
 
         this.started = false;
-        this.hasLocalDescription = false;
-        this.hasRemoteDescription = false;
-        this.hasAtLeastOneIce = false;
-        this.startedMakingAnswer = false;
-        this.hasMadeAnswer = false;
         this.hasRemoteStream = false;
-
-        this.localDescription = null;
-        this.remoteDescription = null;
     }
 
     start() {
         if (this.started) {
             return;
         }
-
-        var self = this;
 
         this.started = true;
         this._stateChanged();
@@ -84,79 +57,53 @@ class Peer {
         });
         var pc = this.peerConnection;
 
-        pc.onicecandidate = function (evt) {
-            var candidate = evt.candidate;
-
-            if (candidate) {
-                candidate = {
-                    candidate: evt.candidate.candidate,
-                    sdpMLineIndex: evt.candidate.sdpMLineIndex,
-                    sdpMid: evt.candidate.sdpMid
-                };
-
-                logger.info('local ice', candidate);
-
-                if (candidate && candidate.sdpMid === '') {
-                    // TODO remove this very dirty hack once this bug is fixed
-                    // https://bugzilla.mozilla.org/show_bug.cgi?id=1115703
-                    switch (candidate.sdpMLineIndex) {
-                        case 0:
-                            if (self.isCaller) {
-                                candidate.sdpMid = 'sdparta_0';
-                            }
-                            break;
-                        case 1:
-                            if (self.isCaller) {
-                                candidate.sdpMid = 'sdparta_1';
-                            }
-                            break;
-                    }
-                    logger.info('modified local ice', candidate);
-                }
-            }
-
-            self.sendPeerMessage({
+        pc.on('ice', function (candidate) {
+            this.sendPeerMessage({
                 type: 'ice',
                 iceCandidate: candidate
             });
-        };
+        }.bind(this));
 
-        pc.onaddstream = function (evt) {
+        pc.on('addStream', function (evt) {
             logger.info('got remote stream', evt.stream);
-            self.hasRemoteStream = true;
-            self._stateChanged();
-            self.parentPeerManager.addRemoteStream(evt.stream, self.peerSocketId);
-        };
+            this.hasRemoteStream = true;
+            this._stateChanged();
+            this.parentPeerManager.addRemoteStream(evt.stream, this.peerSocketId);
+        }.bind(this));
 
-        pc.onremovestream = function (evt) {
+        pc.on('removeStream', function (evt) {
             logger.info('stream removed!', evt.stream);
-        };
+        }.bind(this));
 
-        pc.onsignalingstatechange = function () {
+        pc.on('signalingStateChange', function () {
             logger.info('onsignalingstatechange event detected!', pc.signalingState);
 
-            if (pc.signalingState === 'closed') {
-                self.end();
-                self.parentPeerManager.removeRemoteStream(self.peerSocketId);
-            }
-        };
+            this._stateChanged();
 
-        pc.oniceconnectionstatechange = function () {
+            if (pc.signalingState === 'closed') {
+                this.end();
+                this.parentPeerManager.removeRemoteStream(this.peerSocketId);
+            }
+        }.bind(this));
+
+        pc.on('iceConnectionStateChange', function () {
             logger.info('ice connection state:', pc.iceConnectionState);
-            self._stateChanged();
-        };
+            this._stateChanged();
+        }.bind(this));
 
         if (this.isCaller) {
             logger.info('await local media for peer', this.peerSocketId);
-            this.streamPromise.then((stream) => {
+            this.streamPromise.then(function (stream) {
                 logger.info('got local media for peer', stream);
                 pc.addStream(stream);
-                pc.createOffer(function (offer) {
-                    self._gotLocalDescription(offer);
-                }, function (err) {
-                    logger.info('failed to create offer', err)
-                }, self.offerOptions);
-            });
+                pc.offer(this.offerOptions, function (err, offer) {
+                    if (err) {
+                        logger.info('failed to create offer', err);
+                    } else {
+                        this._sendOffer(offer);
+                    }
+                }.bind(this));
+            }.bind(this));
         }
     }
 
@@ -167,86 +114,81 @@ class Peer {
         }
     }
 
-    _receiveIceCandidateMessage(message) {
-        logger.info('remote ice', message.iceCandidate);
+    _receiveIce(message) {
+        var candidate = message.iceCandidate;
+        var pc = this.peerConnection;
+        logger.info('remote ice', candidate);
 
         if (message.iceCandidate) {
-            var candidate = new RTCIceCandidate(message.iceCandidate);
-            this.peerConnection.addIceCandidate(candidate);
-
-            this.hasAtLeastOneIce = true;
-
-            if (!this.isCaller) {
-                this._makeReplyIfReady()
-            }
+            pc.processIce(message.iceCandidate);
         }
     }
 
-    _receiveSessionDescriptionMessage(message) {
+    _receiveOffer(message) {
+        var offer = message.offer;
         var pc = this.peerConnection;
 
-        var description = new RTCSessionDescription(message.sessionDescription);
-        logger.info('got session description', description);
-        pc.setRemoteDescription(description);
+        logger.info('got offer', offer);
 
-        this.hasRemoteDescription = true;
-        this.remoteDescription = description;
-        this._stateChanged();
-
-        if (!this.isCaller) {
-            this._makeReplyIfReady()
-        }
-    }
-
-    _makeReplyIfReady() {
-        var self = this;
-        var pc = this.peerConnection;
-
-        if (this.hasRemoteDescription) {
-            if (!this.startedMakingAnswer) {
-                this.startedMakingAnswer = true;
+        pc.handleOffer(offer, function(err) {
+            if (err) {
+                logger.error(err);
+            } else {
                 logger.info('awaiting local media to reply to peer', this.peerSocketId);
                 this.streamPromise.then((stream) => {
                     logger.info('got local media for peer', stream);
                     pc.addStream(stream);
-                    pc.createAnswer(function (answer) {
-                        self._gotLocalDescription(answer);
-                    }, function (err) {
-                        logger.info('error in creating answer', err);
-                    });
+                    pc.answer(this.offerOptions, function (err, answer) {
+                        if (err) {
+                            logger.info('error in creating answer', err);
+                        } else {
+                            this._sendAnswer(answer);
+                        }
+                    }.bind(this));
                 });
             }
-        }
+        }.bind(this));
     }
 
-    _gotLocalDescription(description) {
-        var self = this;
+    _receiveAnswer(message) {
+        var answer = message.answer;
         var pc = this.peerConnection;
 
-        logger.info('got local description', description);
+        logger.info('got answer', answer);
+        pc.handleAnswer(answer);
+    }
 
-        this.hasLocalDescription = true;
-        this.localDescription = description;
-        this._stateChanged();
+    _sendIce(candidate) {
+        this.sendPeerMessage({
+            type: 'ice',
+            iceCandidate: candidate
+        })
+    }
 
-        pc.setLocalDescription(description, function () {
-            self.sendPeerMessage({
-                type: 'sdp',
-                sessionDescription: description
-            });
-        }, function () {
-            logger.info('set local description failed')
-
+    _sendOffer(offer) {
+        this.sendPeerMessage({
+            type: 'offer',
+            offer: offer
         });
+    }
+
+    _sendAnswer(answer) {
+        this.sendPeerMessage({
+            type: 'answer',
+            answer: answer
+        })
     }
 
     receivePeerMessage(peerMessage) {
         switch (peerMessage.type) {
             case 'ice':
-                this._receiveIceCandidateMessage(peerMessage);
+                this._receiveIce(peerMessage);
                 break;
-            case 'sdp':
-                this._receiveSessionDescriptionMessage(peerMessage);
+            case 'offer':
+                this._receiveOffer(peerMessage);
+                break;
+            case 'answer':
+                this._receiveAnswer(peerMessage);
                 break;
         }
     }
@@ -259,24 +201,15 @@ class Peer {
     }
 
     getState() {
+        var pc = this.peerConnection;
         if (!this.started) {
             return 'Not started';
-        } else if (this.isCaller && !this.hasLocalDescription) {
-            return "(Caller) Waiting to generate local description to send"
-        } else if (this.isCaller && this.hasLocalDescription && !this.hasRemoteDescription) {
-            return "(Caller) Sent offer, waiting for answer"
-        } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && !this.hasRemoteStream) {
-            return "(Caller) Sent offer, got answer, waiting for stream"
-        } else if (this.isCaller && this.hasLocalDescription && this.hasRemoteDescription && this.hasRemoteStream) {
-            return "(Caller) Has remote stream, ice: " + this.peerConnection.iceConnectionState
-        } else if (!this.isCaller && !this.hasRemoteDescription) {
-            return "(Callee) Waiting for offer"
-        } else if (!this.isCaller && this.hasRemoteDescription && !this.hasLocalDescription) {
-            return "(Callee) Has offer, waiting to create answer"
-        } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && !this.hasRemoteStream) {
-            return "(Callee) Has offer, sent answer, waiting for stream"
-        } else if (!this.isCaller && this.hasRemoteDescription && this.hasLocalDescription && this.hasRemoteStream) {
-            return "(Callee) Has remote stream, ice: " + this.peerConnection.iceConnectionState
+        } else {
+            var s = this.isCaller ? "(Caller)" : "(Callee)";
+            if (pc) {
+                s += " signaling: " + pc.signalingState + ", ice: " + pc.iceConnectionState;
+            }
+            return s;
         }
     }
 

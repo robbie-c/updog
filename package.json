@@ -47,6 +47,7 @@
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "redis": "^2.0.1",
+    "rtcpeerconnection": "^3.1.6",
     "run-sequence": "^1.1.2",
     "serve-favicon": "~2.3.0",
     "set-functions": "^0.1.0",
