@@ -31,8 +31,8 @@ class Peer {
 
         this.offerOptions = {
             mandatory: {
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
+                OfferToReceiveAudio: true,
+                OfferToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
             }
         };
 
