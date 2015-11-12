@@ -2,7 +2,8 @@
 
 import UniversalEvents from 'universalevents';
 
-var io = require('io');
+var io = require('socket.io-client');
+
 var _ = require('underscore');
 
 var logger = require('../../common/logger');

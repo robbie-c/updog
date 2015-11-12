@@ -79,7 +79,7 @@ var clientConfig = _.merge({}, config, {
         jquery: 'jQuery',
         react: 'React',
         'react-dom': 'ReactDOM',
-        io: 'io',
+        'socket.io-client': 'io',
         underscore: '_'
     },
     target: 'web',
