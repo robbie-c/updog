@@ -2,13 +2,21 @@ var React = require('react');
 
 var NavBar = require('./NavBar.jsx');
 
+var PageConnector;
+if (typeof window !== 'undefined') {
+    PageConnector = require('../client/connectors/RoomConnector');
+} else {
+    PageConnector = function () {
+    };
+}
+
 var SignUpPage = React.createClass({
 
     render: function () {
 
         return (
             <div className="topLevelContent">
-                <NavBar user={this.props.user} title={this.props.title}/>
+                <NavBar initialUser={this.props.initialUser} title={this.props.title}/>
                 <div className="container">
                     <form action="/signup" method="post">
                         <div className="form-group">
@@ -37,6 +45,10 @@ var SignUpPage = React.createClass({
                 </div>
             </div>
         );
+    },
+
+    componentWillMount: function () {
+        this.connector = new PageConnector();
     }
 });
 

@@ -7,6 +7,7 @@ var logger = require('../common/logger');
 
 var config = require('../config');
 var redisClient = require('./redisClient');
+var pubsub = require('./pubsub');
 
 var sessionMiddleware = session({
     store: redisClient.store,
@@ -16,6 +17,20 @@ var sessionMiddleware = session({
 });
 
 function noOp() {
+}
+
+function clientSetSelfUser(user) {
+    var _this = this;
+    if (this.selfUserSubscription) {
+        this.selfUserSubscription.close();
+        this.selfUserSubscription = null;
+    }
+    if (user) {
+        this.selfUserSubscription = pubsub.user.subscribe(user.id, function (err, newUser) {
+            _this.user = newUser;
+            _this.emit('self user', newUser.sanitise());
+        })
+    }
 }
 
 function setUpSignalling(server) {
@@ -38,23 +53,21 @@ function setUpSignalling(server) {
 
     io.on('connection', function (client) {
 
-        client.resources = {
-            audio: true,
-            video: false,
-            screen: false
-        };
+        client.emit('self user', client.user);
+        client.setSelfUser = clientSetSelfUser;
+        client.setSelfUser(client.user);
 
         client.on('webrtc peer message', function (details) {
             if (!details) return;
 
             if (!details.to) {
                 logger.info('no to field specified!');
-                return
+                return;
             }
 
             if (!client.room) {
                 logger.info('client not in a room!');
-                return
+                return;
             }
 
             var otherClient = io.sockets.adapter.nsp.connected[details.to];
@@ -79,6 +92,11 @@ function setUpSignalling(server) {
             if (client.room) {
                 var roomData = getRoomData(client.room);
                 io.to(client.room).emit('room data', roomData);
+            }
+
+            if (client.selfUserSubscription) {
+                client.selfUserSubscription.close();
+                client.selfUserSubscription = null;
             }
         });
 
@@ -115,6 +133,7 @@ function setUpSignalling(server) {
                 }
             ]
         };
+
 
         client.emit('start', {
             mySocketId: client.id,

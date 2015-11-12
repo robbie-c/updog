@@ -2,12 +2,22 @@ var React = require('react');
 
 var NavBar = require('./NavBar.jsx');
 
+var PageConnector;
+if (typeof window !== 'undefined') {
+    PageConnector = require('../client/connectors/RoomConnector');
+} else {
+    PageConnector = function () {
+    };
+}
+
 var IndexPage = React.createClass({
 
     render: function () {
         return (
             <div className="topLevelContent">
-                <NavBar user={this.props.user} title={this.props.title}/>
+                <NavBar connector={this.connector}
+                        initialUser={this.props.initialUser}
+                        title={this.props.title}/>
                 <div className="container">
                     <ul>
                         <li><a href="/login">Log In</a></li>
@@ -17,6 +27,11 @@ var IndexPage = React.createClass({
                 </div>
             </div>
         );
+    },
+
+    componentWillMount: function () {
+        console.log('component will mount');
+        this.connector = new PageConnector();
     }
 
 });

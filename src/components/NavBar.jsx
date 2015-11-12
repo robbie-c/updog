@@ -4,16 +4,24 @@ var logger = require('../common/logger');
 
 var NavBar = React.createClass({
 
+    getInitialState: function () {
+        return {
+            user: this.props.initialUser
+        }
+    },
+
     render: function () {
 
+        logger.log('navbar render');
+
         var userButton = null;
-        if (this.props.user && this.props.user.displayName) {
+        if (this.state.user && this.state.user.displayName) {
             userButton = (
                 <li>
-                    <a href="/profile">{this.props.user.displayName}</a>
+                    <a href="/profile">{this.state.user.displayName}</a>
                 </li>
             )
-        } else if (this.props.user) {
+        } else if (this.state.user) {
             // partially completed user
             userButton = (
                 <li>
@@ -23,7 +31,7 @@ var NavBar = React.createClass({
         }
 
         var logInButton;
-        if (this.props.user) {
+        if (this.state.user) {
             logInButton = (
                 <li>
                     <a href="/logout">Log Out</a>
@@ -37,7 +45,7 @@ var NavBar = React.createClass({
             )
         }
 
-        logger.log('user', this.props.user);
+        logger.log('user', this.state.user);
 
         return (
             <nav className="navbar navbar-default navbar-fixed-top">
@@ -51,6 +59,20 @@ var NavBar = React.createClass({
                 </div>
             </nav>
         );
+    },
+
+    componentDidMount: function () {
+        console.log('navbar mounted');
+        if (this.props.connector) {
+            console.log('listening for self user');
+            this.props.connector.on('self user', function (user) {
+                console.log('setting state here');
+                this.setState({user: user});
+            }.bind(this));
+
+        } else {
+            console.log('no connector');
+        }
     }
 });
 
