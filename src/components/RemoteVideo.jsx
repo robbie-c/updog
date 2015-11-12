@@ -4,30 +4,45 @@ var logger = require('../common/logger');
 
 var RemoteVideo = React.createClass({
 
+    getInitialState: function() {
+        return {
+            hasVideo: false
+        };
+    },
+
     render: function () {
-        var self = this;
         return (
-            <video ref={(videoReact) => self.attachStreamToVideo(videoReact)}>
-            </video>
+            <div>
+                <div className={this.state.hasVideo ? "" : "hide"}>
+                    {this.videoNode}
+                </div>
+                <div className={this.state.hasVideo ? "hide" : ""}>No video</div>
+            </div>
         );
     },
 
-    attachStreamToVideo: function (videoReact) {
-        if (videoReact != null) {
-            logger.info('rendering video', this.props.stream);
+    componentDidMount: function () {
+        var _this = this;
+        this.videoNode = (<video ref={(videoDOMNode) => _this._attachStream(videoDOMNode)}/>);
+    },
 
+    _attachStream: function(videoDOMNode) {
+        var _this = this;
+
+        if (videoDOMNode) {
             var url = URL.createObjectURL(this.props.stream);
+
             logger.info('url', url);
 
-            var videoDOM = videoReact.getDOMNode();
-
-            videoDOM.src = url;
-            videoDOM.onloadedmetadata = function () {
-                videoDOM.play();
+            videoDOMNode.src = url;
+            videoDOMNode.onloadedmetadata = function () {
+                _this.setState({
+                    hasVideo: true
+                });
+                videoDOMNode.play();
             };
         }
     }
-
 });
 
 module.exports = RemoteVideo;

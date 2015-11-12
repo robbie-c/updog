@@ -10,3 +10,7 @@ body {
 #localVideo {
     height: 150px;
 }
+
+.hide {
+    display: none
+}
