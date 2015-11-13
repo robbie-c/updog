@@ -15,6 +15,8 @@ class Connector extends UniversalEvents {
             events.START
         ];
         super(myEvents.concat(extraEvents || []));
+        this.mySocketId = null;
+
         var _this = this;
 
         config = this.config = config || {};
@@ -23,6 +25,7 @@ class Connector extends UniversalEvents {
 
         socket.on(events.CONNECT, function () {
             socket.on(events.START, function (serverData) {
+                _this.mySocketId = serverData.mySocketId;
                 _this.emit(events.START, serverData.mySocketId)
             });
         });

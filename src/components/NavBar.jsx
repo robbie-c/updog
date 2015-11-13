@@ -12,8 +12,6 @@ var NavBar = React.createClass({
 
     render: function () {
 
-        logger.log('navbar render');
-
         var userButton = null;
         if (this.state.user && this.state.user.displayName) {
             userButton = (
@@ -45,8 +43,6 @@ var NavBar = React.createClass({
             )
         }
 
-        logger.log('user', this.state.user);
-
         return (
             <nav className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -62,17 +58,9 @@ var NavBar = React.createClass({
     },
 
     componentDidMount: function () {
-        console.log('navbar mounted');
-        if (this.props.connector) {
-            console.log('listening for self user');
-            this.props.connector.on('self user', function (user) {
-                console.log('setting state here');
-                this.setState({user: user});
-            }.bind(this));
-
-        } else {
-            console.log('no connector');
-        }
+        this.props.connector.on('self user', function (user) {
+            this.setState({user: user});
+        }.bind(this));
     }
 });
 

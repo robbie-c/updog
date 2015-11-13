@@ -1,21 +1,19 @@
 'use strict';
 
-import UniversalEvents from 'universalevents';
+/* global navigator: false */
+
+var UniversalEvents =require('universalevents');
 
 var logger = require('../../common/logger');
 
-export default class DeviceManager {
+class DeviceManager {
 
-    /**
-     *
-     * @param {ChatManager} parentChatManager
-     */
-    constructor(parentChatManager) {
+    constructor(initialRoom) {
         this.events = new UniversalEvents([
             'audioAndVideoAccepted',
             'audioAndVideoRejected'
         ]);
-        this.parentChatManager = parentChatManager;
+        this.room = initialRoom;
         this.userMediaRequested = false;
         this.stream = null;
     }
@@ -23,11 +21,9 @@ export default class DeviceManager {
     requestAudioAndVideo() {
         var self = this;
 
-        logger.info('request audio and video');
         var events = this.events;
 
         if (this.stream) {
-            logger.info('already got the stream');
             return Promise.resolve(this.stream);
         }
 
@@ -38,10 +34,9 @@ export default class DeviceManager {
             navigator.getUserMedia(
                 {
                     audio: true,
-                    video: this.parentChatManager.config.video
+                    video: this.room.settings.video
                 },
                 function (stream) {
-                    logger.info('got the local stream at device manager', stream);
                     self.stream = stream;
                     events.emit('audioAndVideoAccepted', stream);
                 },
@@ -54,3 +49,5 @@ export default class DeviceManager {
         return events.await('audioAndVideoAccepted', 'audioAndVideoRejected')
     }
 }
+
+module.exports = DeviceManager;

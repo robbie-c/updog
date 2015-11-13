@@ -11,6 +11,7 @@ var RoomControl = React.createClass({
     getInitialState: function () {
         var room = this.props.room;
         return {
+            user: this.props.initialUser,
             isAwaitingClaimRoom: false,
             settingsVideo: room.settings.video,
             isAwaitingSettingsVideo: false
@@ -18,7 +19,7 @@ var RoomControl = React.createClass({
     },
 
     render: function () {
-        var user = this.props.user;
+        var user = this.state.user;
         var room = this.props.room;
 
         logger.log(user, room);

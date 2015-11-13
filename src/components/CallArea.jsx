@@ -2,9 +2,11 @@ var React = require('react');
 var _ = require('underscore');
 
 var logger = require('../common/logger');
+var events = require('../common/constants/events');
 
 if (typeof window !== 'undefined') {
-    var ChatManager = require('../client/webrtc/ChatManager');
+    var DeviceManager = require('../client/webrtc/DeviceManager');
+    var PeerManager = require('../client/webrtc/PeerManager');
 }
 
 var RemoteVideo = require('./RemoteVideo.jsx');
@@ -13,6 +15,7 @@ var VideoArea = React.createClass({
 
     getInitialState: function () {
         return {
+            user: this.props.initialUser,
             participants: {},
             streams: {},
             peerState: {}
@@ -21,10 +24,6 @@ var VideoArea = React.createClass({
 
     render: function () {
         var self = this;
-        logger.info('participants', this.state.participants);
-        logger.info('streams', this.state.streams);
-        logger.info('peerState', this.state.peerState);
-        logger.info('room', this.props.room);
 
         return (
             <div>
@@ -69,44 +68,47 @@ var VideoArea = React.createClass({
     },
 
     componentDidMount: function () {
-        var self = this;
+        var _this = this;
+        var connector = this.props.connector;
+
         this.localVideo = document.querySelector('#localVideo');
         this.localVideo.onloadedmetadata = function () {
-            self.localVideo.play();
+            _this.localVideo.play();
         };
 
-        this.chatManager = new ChatManager(this.props.room.settings);
-        this.chatManager.startTextChat();
+        this.deviceManager = new DeviceManager(this.props.room);
+        this.peerManager = new PeerManager(connector, this.props.room, this.deviceManager);
 
-        this.chatManager.events.on('roomJoined', function (roomData) {
-            self.setState({participants: roomData.participants});
+        connector.on(events.DID_JOIN_ROOM, function (roomData) {
+            _this.setState({participants: roomData.participants});
         });
 
-        this.chatManager.events.on('roomDataChanged', function (roomData) {
-            self.setState({participants: roomData.participants});
+        connector.on(events.ROOM_DATA_CHANGED, function (roomData) {
+            _this.setState({participants: roomData.participants});
         });
 
-        this.chatManager.events.on('peerStateChanged', function(state) {
-            self.setState({peerState: state});
+        this.peerManager.on(events.PEER_STATE_CHANGED, function(state) {
+            _this.setState({peerState: state});
         });
-
-        logger.info('chatManager started');
 
         // TODO do this on a button click, right now doesn't actually work
         this.startRealTimeAV();
+
+        // for debug
+        window.connector = connector;
+        window.devicemanager = this.deviceManager;
+        window.peerManager = this.peerManager;
     },
 
     startRealTimeAV: function () {
         var self = this;
 
-        this.chatManager.startRealTimeAV();
+        this.deviceManager.requestAudioAndVideo()
+            .then(function(stream) {
+                self.localVideo.src = window.URL.createObjectURL(stream);
+            });
 
-        this.chatManager.events.on('localMediaStarted', function (stream) {
-            logger.info('local media stream', stream);
-            self.localVideo.src = window.URL.createObjectURL(stream);
-        });
-
-        this.chatManager.events.on('remoteStreamAdded', function (data) {
+        this.peerManager.on(events.PEER_STREAM_ADDED, function (data) {
             var peerSocketId = data.peerSocketId;
             var stream = data.stream;
             logger.info(peerSocketId, stream);
@@ -117,24 +119,19 @@ var VideoArea = React.createClass({
             newStreamObj[peerSocketId] = stream;
             var newStreams = _.extend(newStreamObj, oldStreams);
 
-            logger.info('oldStreams', oldStreams);
-            logger.info('newStreams', newStreams);
             self.setState({
                 streams: newStreams
             })
         });
 
-        this.chatManager.events.on('remoteStreamRemoved', function (data) {
+        this.peerManager.on(events.PEER_STREAM_REMOVED, function (data) {
             var peerSocketId = data.peerSocketId;
-            logger.info('remove stream from call area', peerSocketId);
 
             var oldStreams = self.state.streams;
 
             var newStreamObj = _.extend({}, oldStreams);
             delete newStreamObj[peerSocketId];
 
-            logger.info('oldStreams', oldStreams);
-            logger.info('newStreams', newStreamObj);
             self.setState({
                 streams: newStreamObj
             })

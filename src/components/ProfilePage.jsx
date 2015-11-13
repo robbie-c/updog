@@ -4,7 +4,7 @@ var NavBar = require('./NavBar.jsx');
 
 var PageConnector;
 if (typeof window !== 'undefined') {
-    PageConnector = require('../client/connectors/RoomConnector');
+    PageConnector = require('../client/connectors/PageConnector');
 } else {
     PageConnector = function () {
     };

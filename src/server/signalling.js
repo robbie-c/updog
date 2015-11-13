@@ -8,6 +8,7 @@ var logger = require('../common/logger');
 var config = require('../config');
 var redisClient = require('./redisClient');
 var pubsub = require('./pubsub');
+var events = require('../common/constants/events');
 
 var sessionMiddleware = session({
     store: redisClient.store,
@@ -28,7 +29,7 @@ function clientSetSelfUser(user) {
     if (user) {
         this.selfUserSubscription = pubsub.user.subscribe(user.id, function (err, newUser) {
             _this.user = newUser;
-            _this.emit('self user', newUser.sanitise());
+            _this.emit(events.SELF_USER, newUser.sanitise());
         })
     }
 }
@@ -53,12 +54,15 @@ function setUpSignalling(server) {
 
     io.on('connection', function (client) {
 
-        client.emit('self user', client.user);
+        client.emit(events.SELF_USER, client.user);
         client.setSelfUser = clientSetSelfUser;
         client.setSelfUser(client.user);
 
-        client.on('webrtc peer message', function (details) {
-            if (!details) return;
+        client.on(events.WEBRTC_PEER_MESSAGE, function (details) {
+            if (!details) {
+                logger.info('empty message!');
+                return;
+            }
 
             if (!details.to) {
                 logger.info('no to field specified!');
@@ -85,13 +89,13 @@ function setUpSignalling(server) {
             // TODO ensure client can speak to that person
 
             details.from = client.id;
-            otherClient.emit('webrtc peer message', details);
+            otherClient.emit(events.WEBRTC_PEER_MESSAGE, details);
         });
 
         client.on('disconnect', function () {
             if (client.room) {
                 var roomData = getRoomData(client.room);
-                io.to(client.room).emit('room data', roomData);
+                io.to(client.room).emit(events.ROOM_DATA_CHANGED, roomData);
             }
 
             if (client.selfUserSubscription) {
@@ -100,11 +104,16 @@ function setUpSignalling(server) {
             }
         });
 
-        client.on('join', function (name, cb = noOp) {
+        client.on(events.REQUEST_JOIN_ROOM, function (name, cb = noOp) {
 
-            logger.info('join');
+            logger.info('join', name);
 
-            // TODO check that name is sane
+            if (!name) {
+                client.emit(events.FAILED_JOIN_ROOM, 'room.name.invalid');
+                return;
+            }
+
+            // TODO check that user has permission to join
             client.join(name);
             client.room = name;
 
@@ -112,7 +121,7 @@ function setUpSignalling(server) {
 
             cb(roomData);
 
-            io.to(name).emit('room data', roomData);
+            io.to(name).emit(events.ROOM_DATA_CHANGED, roomData);
         });
 
         client.on('trace', function (data) {
@@ -134,8 +143,7 @@ function setUpSignalling(server) {
             ]
         };
 
-
-        client.emit('start', {
+        client.emit(events.START, {
             mySocketId: client.id,
             peerConnectionConfig: peerConnectionConfig
         });
@@ -145,7 +153,7 @@ function setUpSignalling(server) {
         var participants = {};
         var room = findClientsSocketByRoomId(roomName);
         room.forEach(function (client) {
-            participants[client.id] = client.resources;
+            participants[client.id] = {};
         });
         return {
             participants: participants

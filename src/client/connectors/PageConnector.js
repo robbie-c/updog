@@ -9,7 +9,6 @@ class PageConnector extends Connector {
         var _this = this;
 
         this.socket.on('self user', function (user) {
-            console.log('self user', user);
             _this.emit('self user', user);
         })
     }

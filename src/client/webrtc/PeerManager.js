@@ -1,7 +1,9 @@
 var setFunctions = require('set-functions');
 var RTCPeerConnection = require('rtcpeerconnection');
+var UniversalEvents = require('universalevents');
 
 var logger = require('../../common/logger');
+var events = require('../../common/constants/events');
 
 function shouldBeCaller(mySocketId, peerSocketId) {
     if (mySocketId == peerSocketId) {
@@ -21,18 +23,18 @@ class Peer {
         this.parentPeerManager = parentPeerManager;
         this.peerSocketId = peerSocketId;
 
-        this.isCaller = shouldBeCaller(parentPeerManager.parentChatManager.mySocketId, peerSocketId);
+        this.isCaller = shouldBeCaller(parentPeerManager.connector.mySocketId, peerSocketId);
         logger.info('isCaller', this.isCaller);
 
         this.peerConnection = null;
-        this.peerConnectionConfig = this.parentPeerManager.parentChatManager.peerConnectionConfig;
+        this.peerConnectionConfig = this.parentPeerManager.peerConnectionConfig;
 
         this.streamPromise = this.parentPeerManager.awaitLocalStream();
 
         this.offerOptions = {
             mandatory: {
                 OfferToReceiveAudio: true,
-                OfferToReceiveVideo: this.parentPeerManager.parentChatManager.config.video
+                OfferToReceiveVideo: this.parentPeerManager.room.settings.video
             }
         };
 
@@ -72,7 +74,7 @@ class Peer {
         }.bind(this));
 
         pc.on('removeStream', function (evt) {
-            logger.info('stream removed!', evt.stream);
+            this.parentPeerManager.removeRemoteStream(this.peerSocketId);
         }.bind(this));
 
         pc.on('signalingStateChange', function () {
@@ -219,15 +221,37 @@ class Peer {
 
 }
 
-export default class PeerManager {
-    /**
-     *
-     * @param {ChatManager} parentChatManager
-     */
-    constructor(parentChatManager) {
-        this.parentChatManager = parentChatManager;
+class PeerManager extends UniversalEvents {
+    constructor(connector, initialRoom, deviceManager) {
+        super([
+            events.PEER_STREAM_ADDED,
+            events.PEER_STREAM_REMOVED,
+            events.PEER_STATE_CHANGED
+        ]);
+        var _this = this;
+
+        this.connector = connector;
+        this.room = initialRoom;
+        this.deviceManager = deviceManager;
         this.peers = {};
         this.participants = {};
+        this.peerConnectionConfig = null;
+
+        this.connector.on(events.WEBRTC_PEER_CONNECTION_CONFIG, function(peerConnectionConfig) {
+            _this.peerConnectionConfig = peerConnectionConfig;
+        });
+
+        this.connector.on(events.DID_JOIN_ROOM, function(roomData) {
+            logger.log('did join room', roomData);
+            _this.updateParticipants(roomData.participants);
+        });
+        this.connector.on(events.ROOM_DATA_CHANGED, function(roomData) {
+            logger.log('room data changed', roomData);
+            _this.updateParticipants(roomData.participants);
+        });
+        this.connector.on(events.WEBRTC_PEER_MESSAGE, function(message) {
+           _this.receiveMessage(message);
+        });
     }
 
     updateParticipants(newParticipants) {
@@ -236,8 +260,8 @@ export default class PeerManager {
         var newParticipantIds = new Set(Object.keys(newParticipants));
 
         // remove ourself from the list of new participants
-        if (this.parentChatManager.mySocketId) {
-            newParticipantIds.delete(this.parentChatManager.mySocketId);
+        if (this.connector.mySocketId) {
+            newParticipantIds.delete(this.connector.mySocketId);
         }
 
         var addedParticipantIds = setFunctions.subtract(newParticipantIds, oldParticipantIds);
@@ -261,7 +285,7 @@ export default class PeerManager {
     }
 
     sendMessage(message) {
-        this.parentChatManager.sendWebRTCPeerMessage(message);
+        this.connector.sendWebRTCPeerMessage(message);
     }
 
     receiveMessage(message) {
@@ -272,6 +296,8 @@ export default class PeerManager {
             } else {
                 logger.info('could not find peer', message.from, this.peers);
             }
+        } else {
+            logger.info('invalid message', message);
         }
     }
 
@@ -302,19 +328,24 @@ export default class PeerManager {
     }
 
     awaitLocalStream() {
-        return this.parentChatManager.awaitLocalStream();
+        return this.deviceManager.requestAudioAndVideo();
     }
 
     addRemoteStream(stream, peerSocketId) {
-        this.parentChatManager.addRemoteStream(stream, peerSocketId);
+        this.emit(events.PEER_STREAM_ADDED, {
+            stream: stream,
+            peerSocketId: peerSocketId
+        });
     }
 
     removeRemoteStream(peerSocketId) {
-        this.parentChatManager.removeRemoteStream(peerSocketId);
+        this.emit(events.PEER_STREAM_REMOVED, {
+            peerSocketId: peerSocketId
+        });
     }
 
     stateChanged() {
-        this.parentChatManager.peerStateChanged()
+        this.emit(events.PEER_STATE_CHANGED, this.getState());
     }
 
     getState() {
@@ -328,6 +359,4 @@ export default class PeerManager {
     }
 }
 
-
-
-
+module.exports = PeerManager;
