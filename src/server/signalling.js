@@ -130,17 +130,8 @@ function setUpSignalling(server) {
             ));
         });
 
-        // TODO read these from a config file
         var peerConnectionConfig = {
-            iceServers: [
-                {
-                    urls: 'stun:stun.l.google.com:19302'
-                }, {
-                    urls: 'turn:numb.viagenie.ca',
-                    credential: 'updogftw',
-                    username: 'robbie.coomber@gmail.com'
-                }
-            ]
+            iceServers: config.iceServers
         };
 
         client.emit(events.START, {
