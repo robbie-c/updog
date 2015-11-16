@@ -30,10 +30,17 @@ var config = {
         callbackURL: 'https://localhost:3000/auth/google/callback'
     },
     iceServers: [
+        /*
         {
             urls: 'turn:104.155.75.9:5349',
             username: 'updog',
             credential: 'testingPasswordForWIPYp11fY1JSHefiI40FWwFJnUpdXjqDux2'
+        },
+        */
+        {
+            urls: 'turn:numb.viagenie.ca',
+            credential: 'updogftw',
+            username: 'robbie.coomber@gmail.com'
         }
     ]
 };
