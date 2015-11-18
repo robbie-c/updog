@@ -1,7 +1,7 @@
 var React = require('react');
 
 var VideoArea = require('./CallArea.jsx');
-var NavBar = require('./NavBar.jsx');
+var NavBar = require('./navBar/NavBar.jsx');
 var RoomControl = require('./RoomControl.jsx');
 
 var RoomConnector;
