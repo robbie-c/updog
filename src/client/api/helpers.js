@@ -1,6 +1,8 @@
 var errors = require('../../common/errors');
+var logger = require('../../common/logger');
 
-function doApiCallInner(url, data, callback) {
+
+function doApiCallUnwrapped(url, data, callback) {
 
     var ajaxSuccess = function (callback, rawResponseData) {
         var status = rawResponseData.status;
@@ -23,9 +25,7 @@ function doApiCallInner(url, data, callback) {
 
     $.ajax({
         url: url,
-        data: JSON.stringify({
-            data: data
-        }),
+        data: data,
         success: ajaxSuccess,
         error: ajaxError,
         type: 'POST',
@@ -35,9 +35,13 @@ function doApiCallInner(url, data, callback) {
 }
 
 function doApiCall(url, data, callback) {
+    data = JSON.stringify({
+        data: data
+    });
+
     if (!callback) {
         return new Promise(function (resolve, reject) {
-            doApiCallInner(url, data, function (err, resp) {
+            doApiCallUnwrapped(url, data, function (err, resp) {
                 if (err) {
                     reject(err);
                 } else {
@@ -46,10 +50,11 @@ function doApiCall(url, data, callback) {
             });
         });
     } else {
-        doApiCallInner(url, data, callback);
+        doApiCallUnwrapped(url, data, callback);
     }
 }
 
 module.exports = {
-    doApiCall: doApiCall
+    doApiCall: doApiCall,
+    doApiCallUnwrapped: doApiCallUnwrapped
 };

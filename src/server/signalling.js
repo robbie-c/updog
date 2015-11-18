@@ -1,6 +1,7 @@
 var session = require("express-session");
 var socketIO = require('socket.io');
 var passport = require('passport');
+var jwt = require('jsonwebtoken');
 require('./passport/passport')(passport);
 
 var logger = require('../common/logger');
@@ -9,6 +10,7 @@ var config = require('../config');
 var redisClient = require('./redisClient');
 var pubsub = require('./pubsub');
 var events = require('../common/constants/events');
+import User from './models/user';
 
 var sessionMiddleware = session({
     store: redisClient.store,
@@ -27,7 +29,7 @@ function clientSetSelfUser(user) {
         this.selfUserSubscription = null;
     }
     if (user) {
-        this.selfUserSubscription = pubsub.user.subscribe(user.id, function (err, newUser) {
+        this.selfUserSubscription = pubsub.user.subscribe(user._id, function (err, newUser) {
             _this.user = newUser;
             _this.emit(events.SELF_USER, newUser.sanitise());
         })
@@ -57,6 +59,25 @@ function setUpSignalling(server) {
         client.emit(events.SELF_USER, client.user);
         client.setSelfUser = clientSetSelfUser;
         client.setSelfUser(client.user);
+
+        client.on('token', function (token, callback = noOp) {
+            jwt.verify(token, config.tokenSecret, {}, function (err, data) {
+                if (err) {
+                    // TODO handle error
+                    logger.error(err);
+                } else {
+                    User.findOne({_id: data.id}, function (err, user) {
+                        if (err) {
+                            // TODO handle error
+                            logger.error(err);
+                        } else {
+                            client.setSelfUser(user);
+                            callback(null);
+                        }
+                    })
+                }
+            })
+        });
 
         client.on(events.WEBRTC_PEER_MESSAGE, function (details) {
             if (!details) {
