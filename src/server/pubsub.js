@@ -1,8 +1,11 @@
+'use strict';
+
 var UniversalEvents = require('universalevents');
 
 // TODO do this over redis
 
 import User from './models/user';
+var Room = require('./models/room');
 
 var logger = require('../common/logger');
 
@@ -30,13 +33,30 @@ class SubscribeInstance {
     getAndSubscribeForChanges() {
         if (!this.closed) {
             this.parent.events.on(this.id, this.listener);
-            this.parent.model.findOne({_id: this.id}, function (err, val) {
+
+            var getterCallback = (function (err, val) {
                 if (err) {
                     safeCall(this.callback, err);
                 } else {
                     this._gotValue(val);
                 }
-            }.bind(this));
+            }).bind(this);
+
+            if (this.parent.getter) {
+                var promise = this.parent.getter(this.id, getterCallback);
+                if (promise) {
+                    promise
+                        .then(function (val) {
+                            getterCallback(null, val);
+                        })
+                        .catch(function (err) {
+                            getterCallback(err);
+                        })
+                }
+            } else {
+                // default getter
+                this.parent.model.findOne({_id: this.id}, getterCallback);
+            }
         }
     }
 
@@ -58,9 +78,10 @@ class SubscribeInstance {
 }
 
 class PubSub {
-    constructor(model) {
+    constructor(model, getter) {
         this.events = new UniversalEvents();
         this.model = model;
+        this.getter = getter;
     }
 
     publish(obj) {
@@ -75,5 +96,6 @@ class PubSub {
 }
 
 module.exports = {
-    user: new PubSub(User)
+    user: new PubSub(User),
+    room: new PubSub(Room, Room.findOrCreateDefault)
 };
