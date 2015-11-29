@@ -12,7 +12,6 @@ var shell = require('gulp-shell');
 var merge = require('merge-stream');
 var preservetime = require('gulp-preservetime');
 
-var watch = false;
 var exitCode = 0;
 
 // The default task
@@ -25,45 +24,21 @@ gulp.task('clean', del.bind(
 
 // Bundle
 gulp.task('bundle', function (cb) {
+    var webpackProcess = /^win.*/.test(process.platform) ?
+        path.join('node_modules', '.bin', 'webpack.cmd') :
+        path.join('node_modules', '.bin', 'webpack');
 
-    if (watch) {
-        var started = false;
-        var config = require('./webpack.config.js');
-        var bundler = webpack(config);
-
-        function bundle(err, stats) {
-            if (err) {
-                throw new $.util.PluginError('webpack', err);
+    return require('child_process')
+        .spawn(webpackProcess, ['--config', 'webpack.config.js', '--verbose', '--bail', '--colors'], {stdio: 'inherit'})
+        .on('close', function (code) {
+            if (code) {
+                exitCode = code;
+                cb(new Error('Webpack failed with exit code: ' + code));
+            } else {
+                cb();
             }
 
-            if (argv.verbose) {
-                $.util.log('[webpack]', stats.toString({colors: true}));
-            }
-
-            if (!started) {
-                started = true;
-                return cb();
-            }
-        }
-        bundler.watch(200, bundle);
-    } else {
-
-        var webpackProcess = /^win.*/.test(process.platform) ?
-            path.join('node_modules', '.bin', 'webpack.cmd') :
-            path.join('node_modules', '.bin', 'webpack');
-
-        return require('child_process')
-            .spawn(webpackProcess, ['--config', 'webpack.config.js', '--verbose', '--bail', '--colors'], { stdio: 'inherit' })
-            .on('close', function (code) {
-                if (code) {
-                    exitCode = code;
-                    cb(new Error('Webpack failed with exit code: ' + code));
-                } else {
-                    cb();
-                }
-
-            });
-    }
+        });
 });
 
 // Build the app from source code
@@ -113,6 +88,8 @@ gulp.task('dev', function () {
                 'NODE_ENV': 'development'
             },
             ext: 'js jsx jade css html png css json'
+        }).on('restart', function () {
+            console.log('restarting');
         });
     });
 });

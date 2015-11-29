@@ -1,6 +1,6 @@
 var React = require('react');
 
-var NavBar = require('./NavBar.jsx');
+var NavBar = require('./navBar/NavBar.jsx');
 
 var logger = require('../common/logger');
 
@@ -43,7 +43,7 @@ var RoomControl = React.createClass({
         }
 
         var ownerControls = null;
-        if (user && room && (room.owner._id === user._id)) {
+        if (user && room && room.owner && (room.owner._id === user._id)) {
             ownerControls = (
                 <div>
                     <span>Owner controls</span>

@@ -9,6 +9,7 @@ logger.info('loading config for', hostname);
 
 var config = {
     sessionSecret: 'dOvgrWZJBeB41k72HAinaFRTRC3fc5ix',
+    tokenSecret: 'PovEvCithek3PovEvCithek3haunEbwib1',
     postgres: {
         host: 'ec2-54-217-202-109.eu-west-1.compute.amazonaws.com',
         port: 5432,

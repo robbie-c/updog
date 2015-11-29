@@ -12,6 +12,10 @@ class PageConnector extends Connector {
             _this.emit('self user', user);
         })
     }
+
+    useToken(token, callback) {
+        this.socket.emit('token', token, callback);
+    }
 }
 
 module.exports = PageConnector;
