@@ -41,6 +41,9 @@ var config = {
             urls: 'turn:numb.viagenie.ca',
             credential: 'updogftw',
             username: 'robbie.coomber@gmail.com'
+        },
+        {
+            urls: 'stun:stun.l.google.com:19302'
         }
     ]
 };
