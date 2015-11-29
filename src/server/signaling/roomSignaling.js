@@ -84,6 +84,7 @@ class RoomSignaler {
     attachRoomEventsToClient(client) {
         client.on('disconnect', this._clientDisconnect.bind(this, client));
         client.on(events.WEBRTC_PEER_MESSAGE, this._webrtcPeerMessage.bind(this, client));
+        client.on(events.TEXT_CHAT_MESSAGE, this._textChatMessage.bind(this, client));
     }
 
     _webrtcPeerMessage(client, message) {
@@ -106,6 +107,22 @@ class RoomSignaler {
 
         message.from = client.id;
         otherParticipant.client.emit(events.WEBRTC_PEER_MESSAGE, message);
+    }
+
+    _textChatMessage(client, message, callback) {
+        if (!message) {
+            logger.info('empty message!');
+            return;
+        }
+
+        message.fromClientId = client.id;
+        message.fromUserId = client.user ? client.user._id : null;
+        message.serverTime = Date.now();
+
+        // TODO store message in mongodb
+
+        callback(); // TODO might need to send some data depending on whether the message succeeded
+        this.io.to(this.roomName).emit(events.TEXT_CHAT_MESSAGE, message);
     }
 
     _clientDisconnect(client) {

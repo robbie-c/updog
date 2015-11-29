@@ -15,7 +15,10 @@ class RoomConnector extends PageConnector {
             events.FAILED_JOIN_ROOM,
             events.ROOM_DATA_CHANGED,
             events.WEBRTC_PEER_MESSAGE,
-            events.WEBRTC_PEER_CONNECTION_CONFIG
+            events.WEBRTC_PEER_CONNECTION_CONFIG,
+            events.OPTIMISTIC_CHAT_MESSAGE,
+            events.OPTIMISTIC_CHAT_MESSAGE_STATE_CHANGE,
+            events.TEXT_CHAT_MESSAGE
         ].concat(extraEvents));
 
         this.roomName = this.config.roomName || defaultConfig.roomName;
@@ -44,10 +47,25 @@ class RoomConnector extends PageConnector {
         socket.on(events.WEBRTC_PEER_MESSAGE, function (message) {
             _this.emit(events.WEBRTC_PEER_MESSAGE, message);
         });
+
+        socket.on(events.TEXT_CHAT_MESSAGE, function(message) {
+            if (message.fromClientId !== _this.mySocketId) {
+                _this.emit(events.TEXT_CHAT_MESSAGE, message);
+            }
+        })
     }
 
     sendWebRTCPeerMessage(message) {
         this.socket.emit(events.WEBRTC_PEER_MESSAGE, message);
+    }
+
+    sendTextChatMessage(message) {
+        var _this = this;
+
+        this.emit(events.OPTIMISTIC_CHAT_MESSAGE, message);
+        this.socket.emit(events.TEXT_CHAT_MESSAGE, message, function(response) {
+            _this.emit(events.OPTIMISTIC_CHAT_MESSAGE_STATE_CHANGE, response)
+        });
     }
 }
 

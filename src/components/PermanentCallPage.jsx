@@ -3,6 +3,7 @@ var React = require('react');
 var VideoArea = require('./CallArea.jsx');
 var NavBar = require('./navBar/NavBar.jsx');
 var RoomControl = require('./RoomControl.jsx');
+var TextChatArea = require('./TextChatArea.jsx');
 
 var RoomConnector;
 if (typeof window !== 'undefined') {
@@ -28,12 +29,18 @@ var PermanentCallPage = React.createClass({
                                        initialUser={this.props.initialUser}
                                        title={this.props.title}
                                        room={this.props.room}/>
-                        </div>
-                        <div className="col-md-4">
                             <RoomControl connector={this.connector}
                                          initialUser={this.props.initialUser}
                                          title={this.props.title}
                                          room={this.props.room}/>
+                        </div>
+                        <div className="col-md-4">
+                            <TextChatArea
+                                connector={this.connector}
+                                initialUser={this.props.initialUser}
+                                title={this.props.title}
+                                room={this.props.room}
+                                initialChatMessages={this.props.initialChatMessages}/>
                         </div>
                     </div>
                 </div>
