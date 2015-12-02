@@ -37,14 +37,19 @@ var config = {
             username: 'updog',
             credential: 'testingPasswordForWIPYp11fY1JSHefiI40FWwFJnUpdXjqDux2'
         },
-        */
         {
             urls: 'turn:numb.viagenie.ca',
             credential: 'updogftw',
             username: 'robbie.coomber@gmail.com'
         },
+        */
         {
             urls: 'stun:stun.l.google.com:19302'
+        },
+        {
+            urls: 'turn:52.17.202.208',
+            username: 'ninefingers',
+            credential: 'youhavetoberealistic'
         }
     ]
 };
