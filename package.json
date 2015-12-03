@@ -54,6 +54,7 @@
     "run-sequence": "^1.1.4",
     "serve-favicon": "~2.3.0",
     "set-functions": "^0.1.0",
+    "shortid": "^2.2.4",
     "simplewebrtc": "^1.19.1",
     "socket.io": "^1.3.7",
     "socket.io-client": "^1.3.7",

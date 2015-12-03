@@ -62,6 +62,8 @@ class RoomConnector extends PageConnector {
     sendTextChatMessage(message) {
         var _this = this;
 
+        message.fromClientId = this.mySocketId;
+
         this.emit(events.OPTIMISTIC_CHAT_MESSAGE, message);
         this.socket.emit(events.TEXT_CHAT_MESSAGE, message, function(response) {
             _this.emit(events.OPTIMISTIC_CHAT_MESSAGE_STATE_CHANGE, response)

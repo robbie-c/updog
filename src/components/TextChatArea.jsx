@@ -11,16 +11,34 @@ var TextChatArea = React.createClass({
 
     getInitialState: function () {
         return {
+            roomData: {},
+            selfUser: null,
             chatMessages: this.props.initialChatMessages || []
         }
     },
 
+    _getUserFromRoomData(userId) {
+
+    },
+
     render: function () {
+        var _this = this;
+
         return (
             <div className="topLevelContent">
                 {
                     this.state.chatMessages.map(function (chatMessage) {
-                        return <ChatMessage key={chatMessage.id} chatMessage={chatMessage}/>
+                        var posterUser;
+                        var key;
+                        if (chatMessage.localMessageId) {
+                            posterUser = _this.state.selfUser;
+                            key = chatMessage.localMessageId;
+                        } else {
+                            posterUser = _this.state.roomData.users[chatMessage.fromUserId];
+                            key = 'remote-' + chatMessage._id;
+                        }
+
+                        return <ChatMessage key={key} chatMessage={chatMessage} posterUser={posterUser}/>
                     })
                 }
                 <ChatComposer connector={this.props.connector}
@@ -32,8 +50,10 @@ var TextChatArea = React.createClass({
     },
 
     componentDidMount: function() {
-        this.props.connector.on(events.TEXT_CHAT_MESSAGE, this.onTextChatMessage.bind(this));
-        this.props.connector.on(events.OPTIMISTIC_CHAT_MESSAGE, this.onOptimisticChatMessage.bind(this));
+        this.props.connector.on(events.TEXT_CHAT_MESSAGE, this.onTextChatMessage);
+        this.props.connector.on(events.OPTIMISTIC_CHAT_MESSAGE, this.onOptimisticChatMessage);
+        this.props.connector.on(events.ROOM_DATA_CHANGED, this.onRoomDataChanged);
+        this.props.connector.on(events.SELF_USER, this.onSelfUserChanged);
     },
 
     onTextChatMessage: function(message) {
@@ -54,8 +74,19 @@ var TextChatArea = React.createClass({
         });
 
         this.setState(newState);
-    }
+    },
 
+    onRoomDataChanged: function(roomData) {
+        this.setState({
+            roomData: roomData
+        })
+    },
+
+    onSelfUserChanged: function(selfUser) {
+        this.setState({
+            selfUser: selfUser
+        });
+    }
 });
 
 module.exports = TextChatArea;

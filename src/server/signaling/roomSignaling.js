@@ -1,5 +1,7 @@
 'use strict';
 
+var shortid = require('shortid');
+
 var logger = require('../../common/logger');
 var events = require('../../common/constants/events');
 
@@ -8,8 +10,6 @@ var pubsub = require('../pubsub');
 var rooms = {};
 
 function joinRoom(io, client, roomName, callback) {
-
-    logger.log('joinRoom', roomName);
 
     if (!roomName) {
         // TODO do other sanity checks on the room name
@@ -59,10 +59,12 @@ class RoomSignaler {
                     client.roomSignaler = this;
                     client.join(this.roomName);
 
+                    logger.log('join succeeded', client.id);
+
                     this.participants[client.id] = {
                         client: client,
                         user: client.user,
-                        userSubscription: client.user ? pubsub.user.subscribe(client.user._id, this._userChanged.bind(this.client.id)) : null
+                        userSubscription: client.user ? pubsub.user.subscribe(client.user._id, this._userChanged.bind(this, client.id)) : null
                     };
 
                     this.attachRoomEventsToClient(client);
@@ -98,7 +100,6 @@ class RoomSignaler {
             return;
         }
 
-        logger.log(this.participants);
         var otherParticipant = this.participants[message.to];
         if (!otherParticipant) {
             logger.info('couldnt find other client', message.to);
@@ -115,14 +116,22 @@ class RoomSignaler {
             return;
         }
 
-        message.fromClientId = client.id;
-        message.fromUserId = client.user ? client.user._id : null;
-        message.serverTime = Date.now();
+        // copy the things we care about into the new message, ignore other keys
+        var safeMessage = {
+            contents: message.contents,
+            clientTime: message.clientTime,
+            type: message.type,
+
+            fromClientId: client.id,
+            fromUserId: client.user ? client.user._id : null,
+            serverTime: Date.now(),
+            _id: shortid.generate()
+        };
 
         // TODO store message in mongodb
 
         callback(); // TODO might need to send some data depending on whether the message succeeded
-        this.io.to(this.roomName).emit(events.TEXT_CHAT_MESSAGE, message);
+        this.io.to(this.roomName).emit(events.TEXT_CHAT_MESSAGE, safeMessage);
     }
 
     _clientDisconnect(client) {
@@ -133,8 +142,10 @@ class RoomSignaler {
         this._broadcastRoomData();
     }
 
+    //noinspection JSUnusedLocalSymbols
     _userChanged(socketId, user) {
-        this.participants[socketId] = user;
+        // don't actually need the arguments, because we just pull the users out of the clients
+        // however in future they might be useful if we want to send only changes
 
         this._broadcastRoomData();
     }
@@ -182,12 +193,16 @@ class RoomSignaler {
 
     _getRoomData() {
         var participants = {};
+        var users = {};
 
         // sanitise participants, e.g. remove the subscription object and sanitise the user
         for (let socketId of Object.keys(this.participants)) {
-            let user = this.participants[socketId].user;
+            let userClient = this.participants[socketId];
+            let user = userClient.user;
+
             if (user) {
                 user = user.sanitise();
+                users[user._id] = user;
             }
 
             participants[socketId] = {
@@ -196,7 +211,8 @@ class RoomSignaler {
         }
 
         return {
-            participants: participants
+            participants: participants,
+            users: users
         };
     }
 
