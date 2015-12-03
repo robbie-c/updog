@@ -28,7 +28,7 @@ var config = {
     googleAuth: {
         clientId: '640683349524-fhi7nh4ubqe9fogpchb0l6b462psd4ff.apps.googleusercontent.com',
         clientSecret: 'LONIGF0jmbcZHseZmDC1KZtl',
-        callbackURL: 'https://localhost:3000/auth/google/callback'
+        callbackURL: '/auth/google/callback'
     },
     iceServers: [
         /*
@@ -53,14 +53,6 @@ var config = {
         }
     ]
 };
-
-if (process.env.HOSTNAME) {
-    config = merge(config, {
-        googleAuth: {
-            callbackURL: process.env.HOSTNAME + '/auth/google/callback'
-        }
-    });
-}
 
 if (/saffron/.test(hostname)) {
     config = merge(config, {
