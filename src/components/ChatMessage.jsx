@@ -5,11 +5,16 @@ var logger = require('../common/logger');
 var ChatMessage = React.createClass({
 
     render: function () {
-        var displayName = this.props.posterUser ? this.props.posterUser.displayName : 'anon-' + this.props.chatMessage.fromClientId;
+        var chatMessage = this.props.chatMessage;
+        var posterUser = this.props.posterUser;
+
+        var displayName = posterUser ? posterUser.displayName : 'anon-' + chatMessage.fromClientId;
+        var date = chatMessage.serverTime ? chatMessage.serverTime : chatMessage.clientTime;
+        date = Date(date);
 
         return (
             <div>
-                <div><p>{displayName}</p></div>
+                <div><p>{displayName}</p><small className='pull-right'>{date}</small></div>
                 <p>{this.props.chatMessage.contents}</p>
             </div>
 

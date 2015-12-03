@@ -19,8 +19,7 @@ router.get('/:roomName', function (req, res, next) {
                         var props = {
                             chatMessages: [], // TODO
                             participants: [],
-                            user: req.isAuthenticated() && req.user ? req.user.sanitise() : null,
-                            room: roomSanitised
+                            initialRoom: roomSanitised
                         };
                         res.reactRender('Chat Room: ' + roomName, 'PermanentCallPage', props);
                     }

@@ -20,7 +20,8 @@ var PermanentCallPage = React.createClass({
                 <NavBar connector={this.connector}
                         initialUser={this.props.initialUser}
                         title={this.props.title}
-                        room={this.props.room}/>
+                        initialRoom={this.props.initialRoom}
+                />
                 <div className="container">
                     <h1>Hi there!</h1>
                     <div className=" row">
@@ -28,19 +29,22 @@ var PermanentCallPage = React.createClass({
                             <VideoArea connector={this.connector}
                                        initialUser={this.props.initialUser}
                                        title={this.props.title}
-                                       room={this.props.room}/>
+                                       initialRoom={this.props.initialRoom}
+                            />
                             <RoomControl connector={this.connector}
                                          initialUser={this.props.initialUser}
                                          title={this.props.title}
-                                         room={this.props.room}/>
+                                         initialRoom={this.props.initialRoom}
+                            />
                         </div>
                         <div className="col-md-4">
                             <TextChatArea
                                 connector={this.connector}
                                 initialUser={this.props.initialUser}
                                 title={this.props.title}
-                                room={this.props.room}
-                                initialChatMessages={this.props.initialChatMessages}/>
+                                initialRoom={this.props.initialRoom}
+                                initialChatMessages={this.props.initialChatMessages}
+                            />
                         </div>
                     </div>
                 </div>

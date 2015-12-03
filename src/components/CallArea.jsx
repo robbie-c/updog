@@ -16,6 +16,7 @@ var VideoArea = React.createClass({
     getInitialState: function () {
         return {
             user: this.props.initialUser,
+            room: this.props.initialRoom,
             participants: {},
             streams: {},
             peerState: {}
@@ -76,8 +77,8 @@ var VideoArea = React.createClass({
             _this.localVideo.play();
         };
 
-        this.deviceManager = new DeviceManager(this.props.room);
-        this.peerManager = new PeerManager(connector, this.props.room, this.deviceManager);
+        this.deviceManager = new DeviceManager(this.state.room);
+        this.peerManager = new PeerManager(connector, this.state.room, this.deviceManager);
 
         connector.on(events.DID_JOIN_ROOM, function (roomData) {
             _this.setState({participants: roomData.participants});

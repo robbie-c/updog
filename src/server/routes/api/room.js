@@ -27,8 +27,14 @@ router.post('/claimRoom', function (req, res) {
         } else if (!room) {
             return res.apiFailure(httpStatus.NOT_FOUND);
         } else {
-            res.apiSuccess({
-                room: room // TODO sanitize
+            room.sanitiseWithUsers(function (err, sanitisedRoom) {
+                if (err) {
+                    res.apiFailure(err);
+                } else {
+                    res.apiSuccess({
+                        room: sanitisedRoom
+                    })
+                }
             });
         }
     });

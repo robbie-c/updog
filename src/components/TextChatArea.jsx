@@ -13,7 +13,8 @@ var TextChatArea = React.createClass({
         return {
             roomData: {},
             selfUser: null,
-            chatMessages: this.props.initialChatMessages || []
+            chatMessages: this.props.initialChatMessages || [],
+            room: this.props.initialRoom
         }
     },
 
@@ -44,7 +45,7 @@ var TextChatArea = React.createClass({
                 <ChatComposer connector={this.props.connector}
                               initialUser={this.props.initialUser}
                               title={this.props.title}
-                              room={this.props.room}/>
+                              initialRoom={this.props.initialRoom}/>
             </div>
         );
     },

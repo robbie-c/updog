@@ -9,18 +9,17 @@ var apiRoom = require('../client/api/room');
 var RoomControl = React.createClass({
 
     getInitialState: function () {
-        var room = this.props.room;
         return {
+            room: this.props.initialRoom,
             user: this.props.initialUser,
             isAwaitingClaimRoom: false,
-            settingsVideo: room.settings.video,
             isAwaitingSettingsVideo: false
         }
     },
 
     render: function () {
         var user = this.state.user;
-        var room = this.props.room;
+        var room = this.state.room;
 
         logger.log(user, room);
 
@@ -54,7 +53,7 @@ var RoomControl = React.createClass({
                         ) : (
                     <div className="checkbox">
                         <label>
-                            <input type="checkbox" checked={this.state.settingsVideo}
+                            <input type="checkbox" checked={this.state.room.settingsVideo}
                                    onChange={this.handleChange.bind(this, 'settingsVideo')}/>Video
                         </label>
                     </div>
@@ -74,12 +73,12 @@ var RoomControl = React.createClass({
     handleSubmit: function (e) {
         e.preventDefault();
         this.setState({isAwaitingClaimRoom: true});
-        apiRoom.apiClaimRoom(this.props.room._id, function (err, data) {
+        apiRoom.apiClaimRoom(this.state.room._id, function (err, data) {
             this.setState({isAwaitingClaimRoom: false});
             if (err) {
                 logger.error(err);
             } else {
-                this.setProps({room: data.room});
+                this.setState({room: data.room});
             }
         }.bind(this));
     },
@@ -88,7 +87,7 @@ var RoomControl = React.createClass({
         switch (what) {
             case 'settingsVideo':
                 this.setState({isAwaitingSettingsVideo: true});
-                apiRoom.updateSetting(this.props.room._id, 'video', event.target.checked, function(err, newSettings) {
+                apiRoom.updateSetting(this.state.room._id, 'video', event.target.checked, function (err, newSettings) {
                     this.setState({isAwaitingSettingsVideo: false});
 
                     if (newSettings.video !== undefined) {
