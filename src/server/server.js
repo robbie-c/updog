@@ -34,6 +34,14 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// if we're being forwarded http (e.g. by heroku), redirect to https
+app.use(function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] === 'http') {
+        return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    return next();
+});
+
 // uncomment after placing your favicon in /static
 app.use(favicon(path.join(__dirname, '..', 'static', 'favicon.ico')));
 app.use(requestLogger('dev'));
