@@ -13,11 +13,6 @@ var signalling = require('./server/signalling');
 
 var basePort = normalizePort(process.env.PORT || '3000');
 
-var httpPort = basePort + 1;
-var httpsPort = basePort + 2;
-
-
-
 app.set('port', basePort);
 
 var httpServer = http.createServer(app);
@@ -32,6 +27,9 @@ if (process.env.NODE_ENV === 'production') {
     };
     var httpsServer = https.createServer(httpsOptions, app);
     var netServer = net.createServer(tcpConnection);
+
+    var httpPort = basePort + 1;
+    var httpsPort = basePort + 2;
 
     netServer.listen(basePort);
     httpServer.listen(httpPort);
