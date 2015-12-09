@@ -7,6 +7,9 @@
     "start": "node src/runServer.js",
     "lint": "eslint --ext .js --ext .jsx src"
   },
+  "engines" : {
+    "node" : "5.1.1"
+  },
   "dependencies": {
     "async": "^1.5.0",
     "babel": "6.3",
