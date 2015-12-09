@@ -15,15 +15,16 @@ mkdir -p ~/.ssh/
 cat $ROOT_DIR/config/bitbucket/known_hosts >> ~/.ssh/known_hosts
 
 git clone $GIT_URL $GIT_DIR
-cd $GIT_DIR
 
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
 source ~/.bashrc
-
 nvm install 5.1.1
 
 npm install -g pm2
+
+cd $GIT_DIR
 npm update
 npm install
 
+cd $GIT_DIR
 NODE_ENV=production pm2 start $GIT_DIR/src/runServer.js --name updog

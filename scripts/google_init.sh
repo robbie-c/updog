@@ -3,8 +3,8 @@
 set -x
 set -e
 
-PROJECT_NAME="updog_chatter"
+PROJECT_NAME="updog-chatter"
 ZONE="europe-west1-d"
 
-gcloud config set project $(PROJECT_NAME)
-gcloud config set compute/zone $(ZONE)
+gcloud config set project $PROJECT_NAME
+gcloud config set compute/zone $ZONE
