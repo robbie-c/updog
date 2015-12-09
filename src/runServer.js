@@ -40,8 +40,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 [netServer, httpServer, httpsServer].forEach(function (server) {
-    server.on('error', onError.bind(server));
-    server.on('listening', onListening.bind(server));
+    if (server) {
+        server.on('error', onError.bind(server));
+        server.on('listening', onListening.bind(server));
+    }
 });
 
 function tcpConnection(conn) {
