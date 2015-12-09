@@ -19,8 +19,8 @@ var IndexPage = React.createClass({
                         initialUser={this.props.initialUser}
                         title={this.props.title}/>
                 <div className="container">
-                    <h1>What is UpDog</h1>
-                    <p>It is a audio, video and text chat room service, designed by gamers for gamers.</p>
+                    <h1>What is UpDog?</h1>
+                    <p>It is an audio, video and text chat room service, designed by gamers for gamers.</p>
 
                     <h1>How do I use it?</h1>
                     <p>To create a room, go to the <a href="/r/">rooms page</a> and enter the desired name. Alternatively just go to https://updog.gg/r/<strong>room-name-here</strong></p>
