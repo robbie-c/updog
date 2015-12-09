@@ -20,6 +20,10 @@ cd $GIT_DIR
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
 source ~/.bashrc
 
-nvm install 4.2
+nvm install 5.1.1
 
+npm install -g pm2
 npm update
+npm install
+
+NODE_ENV=production pm2 start $GIT_DIR/src/runServer.js --name updog
