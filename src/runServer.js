@@ -16,21 +16,23 @@ var basePort = normalizePort(process.env.PORT || '3000');
 var httpPort = basePort + 1;
 var httpsPort = basePort + 2;
 
-var httpsOptions = {
-    key: fs.readFileSync('./src/dev/dev.key'),
-    cert: fs.readFileSync('./src/dev/dev.crt')
-};
+
 
 app.set('port', basePort);
 
-var netServer = net.createServer(tcpConnection);
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(httpsOptions, app);
 
 if (process.env.NODE_ENV === 'production') {
     httpServer.listen(basePort);
     signalling(httpServer);
 } else {
+    var httpsOptions = {
+        key: fs.readFileSync('./src/dev/dev.key'),
+        cert: fs.readFileSync('./src/dev/dev.crt')
+    };
+    var httpsServer = https.createServer(httpsOptions, app);
+    var netServer = net.createServer(tcpConnection);
+
     netServer.listen(basePort);
     httpServer.listen(httpPort);
     httpsServer.listen(httpsPort);
