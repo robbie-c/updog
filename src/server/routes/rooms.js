@@ -33,4 +33,8 @@ router.get('/:roomName', function (req, res, next) {
         });
 });
 
+router.get('/', function (req, res) {
+    res.reactRender('Rooms', 'RoomsPage')
+});
+
 module.exports = router;

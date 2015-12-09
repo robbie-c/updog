@@ -76,4 +76,8 @@ router.post('/log', function (req, res) {
     clientLogDump.save(res.apiCallback);
 });
 
+router.get('/faq', function (req, res) {
+    res.reactRender('FAQ', 'FaqPage')
+});
+
 module.exports = router;

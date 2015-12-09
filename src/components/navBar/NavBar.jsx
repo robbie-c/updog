@@ -113,8 +113,20 @@ var NavBar = React.createClass({
                     <nav className="navbar navbar-default navbar-fixed-top">
                         <div className="container">
                             <div className="navbar-header">
-                                <a className="navbar-brand" href="/">Updog</a>
+                                <a className="navbar-brand" href="/"><strong>Updog</strong> <small>Unreleased Alpha</small></a>
                             </div>
+                            <ul className="nav navbar-nav">
+                                <li>
+                                    <a href="/r/">
+                                        Rooms
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/faq">
+                                        FAQ
+                                    </a>
+                                </li>
+                            </ul>
                             <ul className="nav navbar-nav navbar-right">
                                 {userButton}
                                 {logInButton}

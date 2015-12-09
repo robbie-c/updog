@@ -4,5 +4,7 @@ module.exports = {
     SignUpPage: require('./SignUpPage.jsx'),
     PermanentCallPage: require('./PermanentCallPage.jsx'),
     ProfilePage: require('./ProfilePage.jsx'),
-    CompleteProfilePage: require('./completeProfile/CompleteProfilePage.jsx')
+    CompleteProfilePage: require('./completeProfile/CompleteProfilePage.jsx'),
+    FaqPage: require('./faqPage/FaqPage'),
+    RoomsPage: require('./roomsPage/RoomsPage')
 };
