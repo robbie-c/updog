@@ -4,8 +4,8 @@ var update = require('react-addons-update');
 var ChatMessage = require('./ChatMessage.jsx');
 var ChatComposer = require('./ChatComposer.jsx');
 
-var logger = require('../common/logger');
-var events = require('../common/constants/events');
+var logger = require('../../common/logger');
+var events = require('../../common/constants/events');
 
 var TextChatArea = React.createClass({
 

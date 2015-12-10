@@ -3,8 +3,8 @@ var ReactBootstrap = require('react-bootstrap');
 var Input = ReactBootstrap.Input;
 var ButtonInput = ReactBootstrap.ButtonInput;
 
-var logger = require('../common/logger');
-var events = require('../common/constants/events');
+var logger = require('../../common/logger');
+var events = require('../../common/constants/events');
 
 var localMessageCount = 0;
 

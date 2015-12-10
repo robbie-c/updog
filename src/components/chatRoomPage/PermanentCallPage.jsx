@@ -1,13 +1,13 @@
 var React = require('react');
 
 var VideoArea = require('./CallArea.jsx');
-var NavBar = require('./navBar/NavBar.jsx');
-var RoomControl = require('./RoomControl.jsx');
+var NavBar = require('./../navBar/NavBar.jsx');
+var RoomControl = require('./../RoomControl.jsx');
 var TextChatArea = require('./TextChatArea.jsx');
 
 var RoomConnector;
 if (typeof window !== 'undefined') {
-    RoomConnector = require('../client/connectors/RoomConnector');
+    RoomConnector = require('../../client/connectors/RoomConnector');
 } else {
     RoomConnector = function () {
     };

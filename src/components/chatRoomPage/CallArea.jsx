@@ -1,12 +1,12 @@
 var React = require('react');
 var _ = require('underscore');
 
-var logger = require('../common/logger');
-var events = require('../common/constants/events');
+var logger = require('../../common/logger');
+var events = require('../../common/constants/events');
 
 if (typeof window !== 'undefined') {
-    var DeviceManager = require('../client/webrtc/DeviceManager');
-    var PeerManager = require('../client/webrtc/PeerManager');
+    var DeviceManager = require('../../client/webrtc/DeviceManager');
+    var PeerManager = require('../../client/webrtc/PeerManager');
 }
 
 var RemoteVideo = require('./RemoteVideo.jsx');

@@ -1,6 +1,6 @@
 var React = require('react');
 
-var logger = require('../common/logger');
+var logger = require('../../common/logger');
 
 var ChatMessage = React.createClass({
 
