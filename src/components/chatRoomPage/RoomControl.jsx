@@ -1,10 +1,10 @@
 var React = require('react');
 
-var NavBar = require('./navBar/NavBar.jsx');
+var NavBar = require('./../navBar/NavBar.jsx');
 
-var logger = require('../common/logger');
+var logger = require('../../common/logger');
 
-var apiRoom = require('../client/api/room');
+var apiRoom = require('../../client/api/room');
 
 var RoomControl = React.createClass({
 

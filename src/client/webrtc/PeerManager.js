@@ -226,7 +226,6 @@ class PeerManager extends UniversalEvents {
         super([
             events.PEER_STREAM_ADDED,
             events.PEER_STREAM_REMOVED,
-            events.PEER_STATE_CHANGED
         ]);
         var _this = this;
 
@@ -345,7 +344,7 @@ class PeerManager extends UniversalEvents {
     }
 
     stateChanged() {
-        this.emit(events.PEER_STATE_CHANGED, this.getState());
+        this.connector.peerStateChanged(this.getState());
     }
 
     getState() {

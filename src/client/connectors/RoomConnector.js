@@ -18,7 +18,8 @@ class RoomConnector extends PageConnector {
             events.WEBRTC_PEER_CONNECTION_CONFIG,
             events.OPTIMISTIC_CHAT_MESSAGE,
             events.OPTIMISTIC_CHAT_MESSAGE_STATE_CHANGE,
-            events.TEXT_CHAT_MESSAGE
+            events.TEXT_CHAT_MESSAGE,
+            events.PEER_STATE_CHANGED
         ].concat(extraEvents));
 
         this.roomName = this.config.roomName || defaultConfig.roomName;
@@ -68,6 +69,10 @@ class RoomConnector extends PageConnector {
         this.socket.emit(events.TEXT_CHAT_MESSAGE, message, function(response) {
             _this.emit(events.OPTIMISTIC_CHAT_MESSAGE_STATE_CHANGE, response)
         });
+    }
+
+    peerStateChanged(newPeerState) {
+        this.emit(events.PEER_STATE_CHANGED, newPeerState);
     }
 }
 

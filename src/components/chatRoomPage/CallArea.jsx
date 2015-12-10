@@ -17,19 +17,17 @@ var VideoArea = React.createClass({
         return {
             user: this.props.initialUser,
             room: this.props.initialRoom,
-            participants: {},
-            streams: {},
-            peerState: {}
+            streams: {}
         }
     },
 
     render: function () {
         var self = this;
 
-        return (
-            <div>
-                <h1>Remote Video</h1>
+        var isVisible = !!this.state.room.settings.video;
 
+        return (
+            <div className={isVisible ? "" : "hidden"}>
                 <div id="remoteVideos">
                     {
                         Object.keys(this.state.streams).map(function (peerSocketId) {
@@ -43,27 +41,7 @@ var VideoArea = React.createClass({
                         })
                     }
                 </div>
-                <h1>Local Video</h1>
                 <video id="localVideo" muted={true}/>
-                <div>
-                    <ul>
-                        {
-                            Object.keys(this.state.participants).map(function (participantId) {
-                                return (<li key={participantId}>{participantId}</li>);
-                            })
-                        }
-                    </ul>
-                </div>
-                <div>
-                    <ul>
-                        {
-                            Object.keys(this.state.peerState).map(function (participantId) {
-                                return (<li key={'peerState-' + participantId}>{participantId + ': ' + self.state.peerState[participantId]}</li>);
-                                })
-                            }
-                    </ul>
-                </div>
-
             </div>
         );
     },
@@ -79,18 +57,6 @@ var VideoArea = React.createClass({
 
         this.deviceManager = new DeviceManager(this.state.room);
         this.peerManager = new PeerManager(connector, this.state.room, this.deviceManager);
-
-        connector.on(events.DID_JOIN_ROOM, function (roomData) {
-            _this.setState({participants: roomData.participants});
-        });
-
-        connector.on(events.ROOM_DATA_CHANGED, function (roomData) {
-            _this.setState({participants: roomData.participants});
-        });
-
-        this.peerManager.on(events.PEER_STATE_CHANGED, function(state) {
-            _this.setState({peerState: state});
-        });
 
         // TODO do this on a button click, right now doesn't actually work
         this.startRealTimeAV();
