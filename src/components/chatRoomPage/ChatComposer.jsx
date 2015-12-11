@@ -41,10 +41,16 @@ var ChatMessage = React.createClass({
         this.props.connector.sendTextChatMessage(message);
     },
 
+    onKeyPress: function (e) {
+        if (e.key === 'Enter' && !e.getModifierState('Shift')) {
+            this.onFormSubmit(e);
+        }
+    },
+
     render: function () {
         return (
             <form onSubmit={this.onFormSubmit}>
-                <Input type="textarea" onChange={this.onTextAreaChange} value={this.state.value}/>
+                <Input type="textarea" onChange={this.onTextAreaChange} onKeyPress={this.onKeyPress} value={this.state.value}/>
                 <ButtonInput type="submit" value="Submit Button" />
             </form>
         );
