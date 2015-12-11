@@ -34,6 +34,10 @@ var ChatMessage = React.createClass({
             localMessageId: 'local-' + localMessageCount++
         };
 
+        this.setState({
+            value: ''
+        });
+
         this.props.connector.sendTextChatMessage(message);
     },
 
