@@ -18,10 +18,6 @@ var TextChatArea = React.createClass({
         }
     },
 
-    _getUserFromRoomData(userId) {
-
-    },
-
     render: function () {
         var _this = this;
 
