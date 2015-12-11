@@ -9,12 +9,13 @@ var ChatMessage = React.createClass({
         var posterUser = this.props.posterUser;
 
         var displayName = posterUser ? posterUser.displayName : 'anon-' + chatMessage.fromClientId;
-        var date = chatMessage.serverTime ? chatMessage.serverTime : chatMessage.clientTime;
-        date = Date(date);
+        var dateRaw = chatMessage.serverTime ? chatMessage.serverTime : chatMessage.clientTime;
+        var dateObj = new Date(dateRaw);
+        var dateStr = dateObj.toISOString(); // TODO probably should format this a bit better
 
         return (
             <div>
-                <div><p>{displayName}</p><small className='pull-right'>{date}</small></div>
+                <div><p>{displayName}</p><small className='pull-right'>{dateStr}</small></div>
                 <p>{this.props.chatMessage.contents}</p>
             </div>
 
