@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -x
-set -e
 
 GIT_URL="ssh://git@bitbucket.org/robbie_c/updog.git"
 ROOT_DIR="/updog/"
@@ -17,7 +16,7 @@ cat $ROOT_DIR/config/bitbucket/known_hosts >> ~/.ssh/known_hosts
 git clone $GIT_URL $GIT_DIR
 
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
-source ~/.bashrc
+source ~/.nvm/nvm.sh
 nvm install 5.1.1
 
 npm install -g pm2

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -x
-set -e
 
 ROOT_DIR="/updog/"
 NONROOT_USER="updog"
