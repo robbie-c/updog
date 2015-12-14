@@ -72,8 +72,13 @@ class RoomSignaler {
                     logger.info('client joined room', client.id, this.roomName);
 
                     // TODO shouldn't need this, because we're about to broadcast the whole thing to the whole room
-                    var roomData = this._getRoomData();
-                    callback(roomData);
+                    this._getRoomData(function (err, roomData) {
+                        if (err) {
+                            logger.error(err);
+                        } else {
+                            callback(roomData);
+                        }
+                    });
 
                     this._roomChanged();
                 }
@@ -175,7 +180,9 @@ class RoomSignaler {
     }
 
     _roomChanged(newRoom) {
-        this.room = newRoom;
+        if (newRoom) {
+            this.room = newRoom;
+        }
 
         // TODO check that everyone in the room is still allowed to be here
 
@@ -184,14 +191,16 @@ class RoomSignaler {
 
     _broadcastRoomData() {
         // TODO long term goal but only send changes rather than the whole thing
-        var roomData = this._getRoomData();
-
-        logger.log('broadcasting to room', this.roomName, roomData);
-
-        this.io.to(this.roomName).emit(events.ROOM_DATA_CHANGED, roomData);
+        this._getRoomData(function (err, roomData) {
+            if (err) {
+                logger.error(err);
+            } else {
+                this.io.to(this.roomName).emit(events.ROOM_DATA_CHANGED, roomData);
+            }
+        }.bind(this));
     }
 
-    _getRoomData() {
+    _getRoomData(callback) {
         var participants = {};
         var users = {};
 
@@ -210,10 +219,17 @@ class RoomSignaler {
             }
         }
 
-        return {
-            participants: participants,
-            users: users
-        };
+        this.room.sanitiseWithUsers(function (err, sanitisedRoom) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, {
+                    participants: participants,
+                    users: users,
+                    room: sanitisedRoom
+                })
+            }
+        });
     }
 
     close() {

@@ -3,6 +3,7 @@ var React = require('react');
 var NavBar = require('./../navBar/NavBar.jsx');
 
 var logger = require('../../common/logger');
+var events = require('../../common/constants/events');
 
 var apiRoom = require('../../client/api/room');
 
@@ -53,7 +54,7 @@ var RoomControl = React.createClass({
                         ) : (
                     <div className="checkbox">
                         <label>
-                            <input type="checkbox" checked={this.state.room.settingsVideo}
+                            <input type="checkbox" checked={this.state.room.settings.video}
                                    onChange={this.handleChange.bind(this, 'settingsVideo')}/>Video
                         </label>
                     </div>
@@ -87,15 +88,31 @@ var RoomControl = React.createClass({
         switch (what) {
             case 'settingsVideo':
                 this.setState({isAwaitingSettingsVideo: true});
-                apiRoom.updateSetting(this.state.room._id, 'video', event.target.checked, function (err, newSettings) {
-                    this.setState({isAwaitingSettingsVideo: false});
-
-                    if (newSettings.video !== undefined) {
-                        this.setState({settingsVideo: newSettings.video});
+                apiRoom.updateSetting(this.state.room._id, 'video', event.target.checked, function (err, data) {
+                    var newState = {
+                        isAwaitingSettingsVideo: false
+                    };
+                    if (err) {
+                        logger.error(err);
+                    } else {
+                        newState.room = data.room;
                     }
+                    this.setState(newState);
                 }.bind(this));
                 break;
         }
+    },
+
+    onRoomDataChanged: function (roomData) {
+        this.setState({
+            room: roomData.room
+        })
+    },
+
+    componentDidMount: function() {
+        var connector = this.props.connector;
+        connector.on(events.DID_JOIN_ROOM, this.onRoomDataChanged);
+        connector.on(events.ROOM_DATA_CHANGED, this.onRoomDataChanged);
     }
 });
 

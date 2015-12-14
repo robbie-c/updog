@@ -6,6 +6,9 @@ var httpStatus = require('http-status');
 
 import * as modelUser from '../../models/user';
 var Room = require('../../models/room');
+var pubsub = require('../../pubsub');
+
+var logger = require('../../../common/logger');
 
 router.post('/claimRoom', function (req, res) {
     var roomName = req.body.data;
@@ -18,7 +21,8 @@ router.post('/claimRoom', function (req, res) {
         _id: roomName,
         ownerUserId: null
     }, {
-        ownerUserId: req.user._id
+        ownerUserId: req.user._id,
+        $inc: {__v: 1}
     }, {
         new: true
     }, function (err, room) {
@@ -27,6 +31,7 @@ router.post('/claimRoom', function (req, res) {
         } else if (!room) {
             return res.apiFailure(httpStatus.NOT_FOUND);
         } else {
+            pubsub.room.publish(room);
             room.sanitiseWithUsers(function (err, sanitisedRoom) {
                 if (err) {
                     res.apiFailure(err);
@@ -57,7 +62,8 @@ router.post('/updateSetting', function (req, res) {
                 return res.apiFailure(new errors.ValidationError('room.settings.video.invalid', val));
             } else {
                 update = {
-                    'settings.video': val
+                    'settings.video': val,
+                    $inc: {__v: 1}
                 }
             }
             break;
@@ -77,7 +83,16 @@ router.post('/updateSetting', function (req, res) {
             } else if (!room) {
                 return res.apiFailure(httpStatus.NOT_FOUND);
             } else {
-                return res.apiSuccess(room.settings);
+                pubsub.room.publish(room);
+                room.sanitiseWithUsers(function (err, sanitisedRoom) {
+                    if (err) {
+                        res.apiFailure(err);
+                    } else {
+                        res.apiSuccess({
+                            room: sanitisedRoom
+                        })
+                    }
+                });
             }
         });
     } else {
