@@ -29,10 +29,7 @@ var ChatMessage = React.createClass({
         return (
             <li className={chatMessageClass}>
                 <span className={imageSpanClass}>
-                    <span className="chatMessage__icon fa-stack fa-lg">
-                        <i className="fa fa-circle-o fa-stack-2x"/>
-                        <i className="fa fa-stack-1x">{displayName[0]}</i>
-                    </span>
+                    <img src="http://placehold.it/50/55C1E7/fff&text=U" className="img-circle" height="30px" width="30px"/>
                 </span>
                 <div className={contentsClass}>
                     <div>
