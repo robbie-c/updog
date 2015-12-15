@@ -14,3 +14,10 @@ body {
 .hide {
     display: none
 }
+
+.chatMessageList
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

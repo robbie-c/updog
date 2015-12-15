@@ -21,8 +21,11 @@ var TextChatArea = React.createClass({
     render: function () {
         var _this = this;
 
+        var selfUserId = this.state.selfUser ? this.state.selfUser._id.toString() : null;
+
         return (
-            <div className="topLevelContent">
+            <div>
+                <ul className="chatMessageList">
                 {
                     this.state.chatMessages.map(function (chatMessage) {
                         var posterUser;
@@ -35,9 +38,10 @@ var TextChatArea = React.createClass({
                             key = 'remote-' + chatMessage._id;
                         }
 
-                        return <ChatMessage key={key} chatMessage={chatMessage} posterUser={posterUser}/>
+                        return <ChatMessage key={key} chatMessage={chatMessage} posterUser={posterUser} selfUserId={selfUserId} mySocketId={_this.props.connector.mySocketId}/>
                     })
                 }
+                </ul>
                 <ChatComposer connector={this.props.connector}
                               initialUser={this.props.initialUser}
                               title={this.props.title}
