@@ -26,17 +26,12 @@ body {
 
 }
 
-.chatMessage__icon {
-    font-size: 30px;
-    text-transform: uppercase;
-}
-
 .chatMessage__contents {
     word-wrap: break-word;
     position:relative;
     padding:5px;
-    margin:1em 0 3em;
-    border:5px solid #000;
+    margin:0 45px 1px;
+    border:1px solid #000;
     color:#333;
     background:#fff;
     /* css3 */
@@ -49,14 +44,14 @@ body {
 ------------------------------------------ */
 
 .chatMessage__contents--other {
-    margin-left:30px;
+    margin-left:45px;
 }
 
 /* Variant : for right positioned triangle
 ------------------------------------------ */
 
 .chatMessage__contents--self {
-    margin-right:30px;
+    margin-right:45px;
 }
 
 /* THE TRIANGLE
@@ -95,17 +90,17 @@ body {
 .chatMessage__contents--other:before {
     top:10px; /* controls vertical position */
     bottom:auto;
-    left:-30px; /* value = - border-left-width - border-right-width */
-    border-width:15px 30px 15px 0;
+    left:-15px; /* value = - border-left-width - border-right-width */
+    border-width:5px 15px 5px 0;
     border-color:transparent #000;
 }
 
 /* creates the smaller  triangle */
 .chatMessage__contents--other:after {
-    top:16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+    top:11px; /* value = (:before top) + (:before border-top) - (:after border-top) */
     bottom:auto;
-    left:-21px; /* value = - border-left-width - border-right-width */
-    border-width:9px 21px 9px 0;
+    left:-13px; /* value = - border-left-width - border-right-width */
+    border-width:4px 13px 4px 0;
     border-color:transparent #fff;
 }
 
@@ -117,17 +112,17 @@ body {
     top:10px; /* controls vertical position */
     bottom:auto;
     left:auto;
-    right:-30px; /* value = - border-left-width - border-right-width */
-    border-width:15px 0 15px 30px;
+    right:-15px; /* value = - border-left-width - border-right-width */
+    border-width:5px 0 5px 15px;
     border-color:transparent #000;
 }
 
 /* creates the smaller  triangle */
 .chatMessage__contents--self:after {
-    top: 16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+    top: 11px; /* value = (:before top) + (:before border-top) - (:after border-top) */
     bottom: auto;
     left: auto;
-    right: -21px; /* value = - border-left-width - border-right-width */
-    border-width: 9px 0 9px 21px;
+    right: -13px; /* value = - border-left-width - border-right-width */
+    border-width: 4px 0 4px 13px;
     border-color: transparent #fff;
 }
