@@ -24,17 +24,25 @@ var ChatMessage = React.createClass({
         var imageSpanClass = isSelf ? "pull-right" : "pull-left";
         var dateSmallClass = isSelf ? "" : "pull-right";
         var displayNameClass = isSelf ? "pull-right" : "";
+        var contentsClass = 'chatMessage__contents ' + (isSelf ? 'chatMessage__contents--self' : 'chatMessage__contents--other');
 
         return (
             <li className={chatMessageClass}>
-                <span className={imageSpanClass}>Image here</span>
-                <div className="clearfix">
-                    <div className="header">
-                        <small className={dateSmallClass}>{dateStr}</small>
-                        <strong className={displayNameClass}>{displayName}</strong>
+                <span className={imageSpanClass}>
+                    <span className="chatMessage__icon fa-stack fa-lg">
+                        <i className="fa fa-circle-o fa-stack-2x"/>
+                        <i className="fa fa-stack-1x">{displayName[0]}</i>
+                    </span>
+                </span>
+                <div className={contentsClass}>
+                    <div>
+                        <div className="header">
+                            <small className={dateSmallClass}>{dateStr}</small>
+                            <strong className={displayNameClass}>{displayName}</strong>
+                        </div>
                     </div>
+                    <p>{this.props.chatMessage.contents}</p>
                 </div>
-                <p>{this.props.chatMessage.contents}</p>
             </li>
 
         );

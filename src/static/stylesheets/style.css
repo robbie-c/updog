@@ -21,3 +21,113 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.chatMessage {
+
+}
+
+.chatMessage__icon {
+    font-size: 30px;
+    text-transform: uppercase;
+}
+
+.chatMessage__contents {
+    word-wrap: break-word;
+    position:relative;
+    padding:5px;
+    margin:1em 0 3em;
+    border:5px solid #000;
+    color:#333;
+    background:#fff;
+    /* css3 */
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+}
+
+/* Variant : for left positioned triangle
+------------------------------------------ */
+
+.chatMessage__contents--other {
+    margin-left:30px;
+}
+
+/* Variant : for right positioned triangle
+------------------------------------------ */
+
+.chatMessage__contents--self {
+    margin-right:30px;
+}
+
+/* THE TRIANGLE
+------------------------------------------------------------------------------------------------------------------------------- */
+
+
+.chatMessage__contents:before {
+    content:"";
+    position:absolute;
+    bottom:-20px; /* value = - border-top-width - border-bottom-width */
+    left:40px; /* controls horizontal position */
+    border-width:20px 20px 0;
+    border-style:solid;
+    border-color:#000 transparent;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
+}
+
+/* creates the smaller  triangle */
+.chatMessage__contents:after {
+    content:"";
+    position:absolute;
+    bottom:-13px; /* value = - border-top-width - border-bottom-width */
+    left:47px; /* value = (:before left) + (:before border-left) - (:after border-left) */
+    border-width:13px 13px 0;
+    border-style:solid;
+    border-color:#fff transparent;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
+}
+
+
+/* creates the larger triangle */
+.chatMessage__contents--other:before {
+    top:10px; /* controls vertical position */
+    bottom:auto;
+    left:-30px; /* value = - border-left-width - border-right-width */
+    border-width:15px 30px 15px 0;
+    border-color:transparent #000;
+}
+
+/* creates the smaller  triangle */
+.chatMessage__contents--other:after {
+    top:16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+    bottom:auto;
+    left:-21px; /* value = - border-left-width - border-right-width */
+    border-width:9px 21px 9px 0;
+    border-color:transparent #fff;
+}
+
+/* Variant : right
+------------------------------------------ */
+
+/* creates the larger triangle */
+.chatMessage__contents--self:before {
+    top:10px; /* controls vertical position */
+    bottom:auto;
+    left:auto;
+    right:-30px; /* value = - border-left-width - border-right-width */
+    border-width:15px 0 15px 30px;
+    border-color:transparent #000;
+}
+
+/* creates the smaller  triangle */
+.chatMessage__contents--self:after {
+    top: 16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+    bottom: auto;
+    left: auto;
+    right: -21px; /* value = - border-left-width - border-right-width */
+    border-width: 9px 0 9px 21px;
+    border-color: transparent #fff;
+}
