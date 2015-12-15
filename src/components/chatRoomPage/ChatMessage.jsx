@@ -22,8 +22,6 @@ var ChatMessage = React.createClass({
 
         var chatMessageClass = "chatMessage clearfix " + isSelf ? "right" : "left";
         var imageSpanClass = isSelf ? "pull-right" : "pull-left";
-        var dateSmallClass = isSelf ? "" : "pull-right";
-        var displayNameClass = isSelf ? "pull-right" : "";
         var contentsClass = 'chatMessage__contents ' + (isSelf ? 'chatMessage__contents--self' : 'chatMessage__contents--other');
 
         return (
@@ -34,8 +32,8 @@ var ChatMessage = React.createClass({
                 <div className={contentsClass}>
                     <div>
                         <div className="header">
-                            <small className={dateSmallClass}>{dateStr}</small>
-                            <strong className={displayNameClass}>{displayName}</strong>
+                            <strong>{displayName}</strong>
+                            <small className="pull-right">{dateStr}</small>
                         </div>
                     </div>
                     <p>{this.props.chatMessage.contents}</p>
