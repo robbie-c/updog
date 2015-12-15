@@ -7,11 +7,12 @@ var ChatMessage = React.createClass({
     render: function () {
         var chatMessage = this.props.chatMessage;
         var posterUser = this.props.posterUser;
-        var selfUserid = this.props.selfUserId;
+        var selfUserId = this.props.selfUserId;
         var mySocketId = this.props.mySocketId;
 
-        // TODO posted by my current user should work too
-        var isSelf = mySocketId != null && mySocketId == chatMessage.fromClientId;
+        var isSelf = (typeof chatMessage.localMessageId !== 'undefined') ||
+            (mySocketId != null && mySocketId == chatMessage.fromClientId) ||
+            (selfUserId != null && selfUserId == chatMessage.fromUserId);
 
         logger.log(chatMessage);
 
