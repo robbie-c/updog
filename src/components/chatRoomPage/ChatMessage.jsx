@@ -1,5 +1,7 @@
 var React = require('react');
 
+var Linkify = require('react-linkify');
+
 var logger = require('../../common/logger');
 
 var ChatMessage = React.createClass({
@@ -13,8 +15,6 @@ var ChatMessage = React.createClass({
         var isSelf = (typeof chatMessage.localMessageId !== 'undefined') ||
             (mySocketId != null && mySocketId == chatMessage.fromClientId) ||
             (selfUserId != null && selfUserId == chatMessage.fromUserId);
-
-        logger.log(chatMessage);
 
         var displayName = posterUser ? posterUser.displayName : 'anon-' + chatMessage.fromClientId;
         var dateRaw = chatMessage.serverTime ? chatMessage.serverTime : chatMessage.clientTime;
@@ -38,7 +38,7 @@ var ChatMessage = React.createClass({
                             <small className="pull-right">{dateStr}</small>
                         </div>
                     </div>
-                    <p>{this.props.chatMessage.contents}</p>
+                    <Linkify properties={{rel: 'nofollow'}}>{this.props.chatMessage.contents}</Linkify>
                 </div>
             </li>
 
