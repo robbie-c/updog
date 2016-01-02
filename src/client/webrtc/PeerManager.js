@@ -1,6 +1,7 @@
 var setFunctions = require('set-functions');
 var RTCPeerConnection = require('rtcpeerconnection');
 var UniversalEvents = require('universalevents');
+var adapter = require('webrtc-adapter-test');
 
 var logger = require('../../common/logger');
 var events = require('../../common/constants/events');
@@ -32,13 +33,19 @@ class Peer {
         this.streamPromise = this.parentPeerManager.awaitLocalStream();
 
         this.offerOptions = {
-            mandatory: {
-                OfferToReceiveAudio: true,
-                OfferToReceiveVideo: this.parentPeerManager.room.settings.video
-            },
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: this.parentPeerManager.room.settings.video
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: this.parentPeerManager.room.settings.video ? 1 : 0
         };
+
+        // TODO try to push this hack into the shim library
+        if (adapter.webrtcDetectedBrowser === 'chrome') {
+            this.offerOptions = {
+                mandatory: {
+                    OfferToReceiveAudio: 1,
+                    OfferToReceiveVideo: this.parentPeerManager.room.settings.video ? 1 : 0
+                }
+            };
+        }
 
         this.started = false;
         this.hasRemoteStream = false;
