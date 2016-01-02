@@ -35,7 +35,9 @@ class Peer {
             mandatory: {
                 OfferToReceiveAudio: true,
                 OfferToReceiveVideo: this.parentPeerManager.room.settings.video
-            }
+            },
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: this.parentPeerManager.room.settings.video
         };
 
         this.started = false;
