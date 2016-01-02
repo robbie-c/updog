@@ -132,7 +132,7 @@ class Peer {
 
         logger.info('got offer', offer);
 
-        pc.handleOffer(offer, function(err) {
+        pc.handleOffer(offer, function (err) {
             if (err) {
                 logger.error(err);
             } else {
@@ -236,20 +236,20 @@ class PeerManager extends UniversalEvents {
         this.participants = {};
         this.peerConnectionConfig = null;
 
-        this.connector.on(events.WEBRTC_PEER_CONNECTION_CONFIG, function(peerConnectionConfig) {
+        this.connector.on(events.WEBRTC_PEER_CONNECTION_CONFIG, function (peerConnectionConfig) {
             _this.peerConnectionConfig = peerConnectionConfig;
         });
 
-        this.connector.on(events.DID_JOIN_ROOM, function(roomData) {
+        this.connector.on(events.DID_JOIN_ROOM, function (roomData) {
             logger.log('did join room', roomData);
             _this.updateParticipants(roomData.participants);
         });
-        this.connector.on(events.ROOM_DATA_CHANGED, function(roomData) {
+        this.connector.on(events.ROOM_DATA_CHANGED, function (roomData) {
             logger.log('room data changed', roomData);
             _this.updateParticipants(roomData.participants);
         });
-        this.connector.on(events.WEBRTC_PEER_MESSAGE, function(message) {
-           _this.receiveMessage(message);
+        this.connector.on(events.WEBRTC_PEER_MESSAGE, function (message) {
+            _this.receiveMessage(message);
         });
     }
 
