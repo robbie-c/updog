@@ -47,25 +47,12 @@ var config = {
             urls: 'stun:stun.l.google.com:19302'
         },
         {
-            urls: 'turn:52.17.202.208',
-            username: 'ninefingers',
-            credential: 'youhavetoberealistic'
+            urls: 'turn:104.155.24.131',
+            username: 'updog',
+            credential: 'HudpeHev978234kjhsdfkjh'
         }
     ]
 };
-
-if (/saffron/.test(hostname)) {
-    config = merge(config, {
-        redis: {
-            host: '127.0.0.1',
-            port: 6379,
-            pass: '5jVZsi3nrW3DagacyUQu8xzK8rWreCh1'
-        },
-        mongo: {
-            url: 'mongodb://127.0.0.1/updog'
-        }
-    })
-}
 
 if (/yellowstone/.test(hostname)) {
     config = merge(config, {
