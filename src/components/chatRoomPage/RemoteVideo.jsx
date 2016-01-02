@@ -6,7 +6,8 @@ var RemoteVideo = React.createClass({
 
     getInitialState: function() {
         return {
-            hasVideo: false
+            hasVideo: false,
+            hasVideoReactNode: false
         };
     },
 
@@ -14,7 +15,7 @@ var RemoteVideo = React.createClass({
         return (
             <div>
                 <div className={this.state.hasVideo ? "" : "hide"}>
-                    {this.videoNode}
+                    {this.videoReactNode}
                 </div>
                 <div className={this.state.hasVideo ? "hide" : ""}>No video</div>
             </div>
@@ -23,7 +24,10 @@ var RemoteVideo = React.createClass({
 
     componentDidMount: function () {
         var _this = this;
-        this.videoNode = (<video ref={(videoDOMNode) => _this._attachStream(videoDOMNode)}/>);
+        this.videoReactNode = (<video autoPlay={true} className="remoteVideo" ref={(videoDOMNode) => _this._attachStream(videoDOMNode)}/>);
+        this.setState({
+            hasVideoReactNode: true
+        });
     },
 
     _attachStream: function(videoDOMNode) {
@@ -35,13 +39,17 @@ var RemoteVideo = React.createClass({
             logger.info('url', url);
 
             videoDOMNode.src = url;
-            videoDOMNode.onloadedmetadata = function () {
-                _this.setState({
-                    hasVideo: true
-                });
-                videoDOMNode.play();
+            videoDOMNode.onloadedmetadata = function() {
+                _this._videoElementOnLoadedMetadata(videoDOMNode);
             };
         }
+    },
+
+    _videoElementOnLoadedMetadata: function(videoDOMNode) {
+        videoDOMNode.play();
+        this.setState({
+            hasVideo: true
+        });
     }
 });
 
