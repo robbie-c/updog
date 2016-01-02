@@ -41,19 +41,23 @@ var VideoArea = React.createClass({
                         })
                     }
                 </div>
-                <video id="localVideo" muted={true}/>
+                <video id="localVideo" muted={true} ref={self.setUpLocalVideo}/>
             </div>
         );
     },
 
-    componentDidMount: function () {
-        var _this = this;
-        var connector = this.props.connector;
-
-        this.localVideo = document.querySelector('#localVideo');
-        this.localVideo.onloadedmetadata = function () {
-            _this.localVideo.play();
+    setUpLocalVideo(localVideoElement) {
+        if (this.localVideoElement !== localVideoElement) {
+            localVideoElement.play();
+        }
+        this.localVideoElement = localVideoElement;
+        localVideoElement.onloadedmetadata = function () {
+            localVideoElement.play();
         };
+    },
+
+    componentDidMount: function () {
+        var connector = this.props.connector;
 
         this.deviceManager = new DeviceManager(this.state.room);
         this.peerManager = new PeerManager(connector, this.state.room, this.deviceManager);
@@ -72,7 +76,7 @@ var VideoArea = React.createClass({
 
         this.deviceManager.requestAudioAndVideo()
             .then(function(stream) {
-                self.localVideo.src = window.URL.createObjectURL(stream);
+                self.localVideoElement.src = window.URL.createObjectURL(stream);
             });
 
         this.peerManager.on(events.PEER_STREAM_ADDED, function (data) {
