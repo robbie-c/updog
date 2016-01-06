@@ -36,16 +36,12 @@ class Peer {
             offerToReceiveAudio: 1,
             offerToReceiveVideo: this.parentPeerManager.room.settings.video ? 1 : 0
         };
-
-        // TODO try to push this hack into the shim library
-        if (adapter.webrtcDetectedBrowser === 'chrome') {
-            this.offerOptions = {
-                mandatory: {
-                    OfferToReceiveAudio: 1,
-                    OfferToReceiveVideo: this.parentPeerManager.room.settings.video ? 1 : 0
-                }
-            };
-        }
+        this.answerOptions = {
+            mandatory: {
+                OfferToReceiveAudio: 1,
+                OfferToReceiveVideo: this.parentPeerManager.room.settings.video ? 1 : 0
+            }
+        };
 
         this.started = false;
         this.hasRemoteStream = false;
@@ -149,7 +145,8 @@ class Peer {
                 this.streamPromise.then((stream) => {
                     logger.info('got local media for peer', stream);
                     pc.addStream(stream);
-                    pc.answer(this.offerOptions, function (err, answer) {
+                    logger.log('creating answer with', this.answerOptions);
+                    pc.answer(this.answerOptions, function (err, answer) {
                         if (err) {
                             logger.info('error in creating answer', err);
                         } else {
@@ -234,7 +231,7 @@ class PeerManager extends UniversalEvents {
     constructor(connector, initialRoom, deviceManager) {
         super([
             events.PEER_STREAM_ADDED,
-            events.PEER_STREAM_REMOVED,
+            events.PEER_STREAM_REMOVED
         ]);
         var _this = this;
 
