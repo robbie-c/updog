@@ -80,4 +80,14 @@ router.get('/faq', function (req, res) {
     res.reactRender('FAQ', 'FaqPage')
 });
 
+router.get('/test', function (req, res) {
+    var peerConnectionConfig = {
+        iceServers: config.iceServers
+    };
+
+    res.reactRender('Test', 'TestPage', {
+        peerConnectionConfig: peerConnectionConfig
+    });
+});
+
 module.exports = router;
