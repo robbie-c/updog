@@ -47,7 +47,7 @@ var config = {
             urls: 'stun:stun.l.google.com:19302'
         },
         {
-            urls: 'turn:104.155.24.131',
+            urls: 'turn:130.211.83.71',
             username: 'updog',
             credential: 'HudpeHev978234kjhsdfkjh'
         }
