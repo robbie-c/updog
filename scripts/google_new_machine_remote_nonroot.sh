@@ -9,6 +9,7 @@ GIT_DIR="/updog/git"
 cd $ROOT_DIR
 
 eval `ssh-agent -s`
+chmod 600 $ROOT_DIR/config/bitbucket/updog_readonly_rsa
 ssh-add $ROOT_DIR/config/bitbucket/updog_readonly_rsa
 mkdir -p ~/.ssh/
 cat $ROOT_DIR/config/bitbucket/known_hosts >> ~/.ssh/known_hosts

@@ -3,7 +3,7 @@
 set -x
 set -e
 
-SERVER_NAME="web-1"
+SERVER_NAME="web-2"
 ROOT_DIR="/updog/"
 
 gcloud compute copy-files scripts root@$SERVER_NAME:$ROOT_DIR
