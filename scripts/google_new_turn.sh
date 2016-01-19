@@ -3,7 +3,7 @@
 set -x
 set -e
 
-SERVER_NAME="turn-2"
+SERVER_NAME="turn-1"
 ROOT_DIR="/updog/"
 
 gcloud compute ssh root@$SERVER_NAME "mkdir $ROOT_DIR"
