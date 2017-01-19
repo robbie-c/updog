@@ -65,6 +65,9 @@ var config = {
                     ],
                     cacheDirectory: true
                 }
+            },
+            {
+                test: /\.tsx?$/, loader: "awesome-typescript-loader"
             }
         ]
     }

@@ -11,6 +11,8 @@
     "node": "5.1.1"
   },
   "dependencies": {
+    "@types/react": "^15.0.0",
+    "@types/react-dom": "^0.14.20",
     "async": "^1.5.0",
     "babel": "6.3",
     "babel-core": "6.3",
@@ -48,10 +50,10 @@
     "passport": "^0.3.2",
     "passport-google-oauth": "^0.2.0",
     "passport-local": "^1.0.0",
-    "react": "^0.14.5",
+    "react": "^0.14.8",
     "react-addons-update": "^0.14.5",
     "react-bootstrap": "^0.28.1",
-    "react-dom": "^0.14.5",
+    "react-dom": "^0.14.8",
     "react-linkify": "^0.1.1",
     "redis": "^2.4.2",
     "rtcpeerconnection": "^4.0.0",
@@ -67,9 +69,12 @@
     "webrtc-adapter": "0.0.7"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^3.0.0-beta.18",
     "eslint": "^1.10.3",
     "eslint-plugin-react": "^3.13.1",
     "expect.js": "^0.3.1",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "source-map-loader": "^0.1.6",
+    "typescript": "^2.1.5"
   }
 }
