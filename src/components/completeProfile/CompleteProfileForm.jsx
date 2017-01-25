@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 
 var apiUsers = require('../../client/api/user');
 var errors = require('../../common/errors');
@@ -75,4 +75,4 @@ var CompleteProfileForm = React.createClass({
     }
 });
 
-module.exports = CompleteProfileForm;
+export default CompleteProfileForm;

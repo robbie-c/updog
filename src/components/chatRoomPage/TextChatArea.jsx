@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 var update = require('react-addons-update');
 
 var ChatMessage = require('./ChatMessage.jsx');
@@ -90,4 +90,4 @@ var TextChatArea = React.createClass({
     }
 });
 
-module.exports = TextChatArea;
+export default TextChatArea;

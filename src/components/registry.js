@@ -1,11 +1,21 @@
-module.exports = {
-    IndexPage: require('./IndexPage.jsx'),
-    LogInPage: require('./LogInPage.jsx'),
-    SignUpPage: require('./SignUpPage.jsx'),
-    PermanentCallPage: require('./chatRoomPage/PermanentCallPage.jsx'),
-    ProfilePage: require('./ProfilePage.jsx'),
-    CompleteProfilePage: require('./completeProfile/CompleteProfilePage.jsx'),
-    FaqPage: require('./faqPage/FaqPage'),
-    RoomsPage: require('./roomsPage/RoomsPage'),
-    TestPage: require('./testPage/TestPage.jsx')
-};
+import IndexPage from './IndexPage';
+import LogInPage from './LogInPage';
+import SignUpPage from './SignUpPage';
+import PermanentCallPage from './chatRoomPage/PermanentCallPage';
+import ProfilePage from './ProfilePage';
+import CompleteProfilePage from './completeProfile/CompleteProfilePage';
+import FaqPage from './faqPage/FaqPage';
+import RoomsPage from './roomsPage/RoomsPage';
+import TestPage from './testPage/TestPage';
+
+export default {
+    IndexPage,
+    LogInPage,
+    SignUpPage,
+    PermanentCallPage,
+    ProfilePage,
+    CompleteProfilePage,
+    FaqPage,
+    RoomsPage,
+    TestPage
+}

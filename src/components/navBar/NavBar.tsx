@@ -1,54 +1,80 @@
-var React = require('react');
-var ReactBootstrap = require('react-bootstrap');
-var Modal = ReactBootstrap.Modal;
-var Button = ReactBootstrap.Button;
-var ButtonInput = ReactBootstrap.ButtonInput;
-var async = require('async');
+import * as React from "react";
+import * as  ReactBootstrap from "react-bootstrap";
+import * as async from "async";
+import logger from "../../common/logger";
+import apiUser from "../../client/api/user.js";
+const Modal = ReactBootstrap.Modal;
+const Button = ReactBootstrap.Button;
 
-var logger = require('../../common/logger');
-var apiUser = require('../../client/api/user');
+interface INavBarProps {
+    initialUser: any,
+    initialRoom?: any
+    connector: any,
+    title: string
+}
 
-var NavBar = React.createClass({
+interface INavBarState {
+    user: any,
+    showLoginModal: boolean,
+    loginFormEmail: string,
+    loginFormPassword: string,
+    loginInProgress: boolean
+}
 
-    getInitialState: function () {
-        return {
+export class NavBar extends React.Component<INavBarProps, INavBarState> {
+
+    refs: {
+        [key: string]: Element;
+        loginFormEmail: HTMLInputElement;
+        loginFormPassword: HTMLInputElement
+    } = null;
+
+    constructor(props: INavBarProps) {
+        super(props);
+        this.state = {
             user: this.props.initialUser,
             showLoginModal: false,
             loginFormEmail: '',
             loginFormPassword: '',
             loginInProgress: false
-        }
-    },
+        };
+    }
 
-    showLoginModal: function () {
-        this.setState({showLoginModal: true});
-    },
+    showLoginModal() {
+        this.state = {
+            ...this.state,
+            showLoginModal: true
+        };
+    }
 
-    hideLoginModal: function () {
-        this.setState({showLoginModal: false});
-    },
+    hideLoginModal() {
+        this.state = {
+            ...this.state,
+            showLoginModal: false
+        };
+    }
 
-    loginOnClick: function (e) {
+    loginOnClick(e: React.FormEvent<HTMLElement>) {
         e.preventDefault();
 
         this.showLoginModal();
-    },
+    }
 
-    onLocalLoginSubmit: function (e) {
+    onLocalLoginSubmit(e: React.FormEvent<HTMLElement>) {
         e.preventDefault();
 
         // use refs rather than state, because of https://github.com/facebook/react/issues/1159
-        var email = this.refs.loginFormEmail.value;
-        var password = this.refs.loginFormPassword.value;
+        const email = this.refs.loginFormEmail.value;
+        const password = this.refs.loginFormPassword.value;
 
         async.waterfall([
-            function (callback) {
+            function (callback: (token: string) => void) {
                 apiUser.loginWithToken(email, password, callback);
             },
-            function (token, callback) {
+            function (token: string, callback: () => void) {
                 this.props.connector.useToken(token, callback);
             }.bind(this)
-        ], function (err) {
+        ], function (err: Error) {
             this.setState({loginInProgress: false});
             if (err) {
                 // TODO handle error
@@ -57,26 +83,29 @@ var NavBar = React.createClass({
                 this.hideLoginModal();
             }
         }.bind(this));
-    },
+    }
 
-    onInputChanged: function (what, e) {
+    onInputChanged(what: string, event: React.FormEvent<HTMLElement>) {
+        const element: HTMLInputElement = event.target as HTMLInputElement;
         switch (what) {
             case 'loginFormEmail':
-                this.setState({
-                    loginFormEmail: e.target.value
-                });
+                this.state = {
+                    ...this.state,
+                    loginFormEmail: element.value
+                };
                 break;
             case 'loginFormPassword':
-                this.setState({
-                    loginFormPassword: e.target.value
-                });
+                this.state = {
+                    ...this.state,
+                    loginFormPassword: element.value
+                };
                 break;
         }
-    },
+    }
 
-    render: function () {
+    render() {
 
-        var userButton = null;
+        let userButton = null;
         if (this.state.user && this.state.user.displayName) {
             userButton = (
                 <li>
@@ -92,7 +121,7 @@ var NavBar = React.createClass({
             )
         }
 
-        var logInButton;
+        let logInButton;
         if (this.state.user) {
             logInButton = (
                 <li>
@@ -113,7 +142,9 @@ var NavBar = React.createClass({
                     <nav className="navbar navbar-default navbar-fixed-top">
                         <div className="container">
                             <div className="navbar-header">
-                                <a className="navbar-brand" href="/"><strong>Updog</strong> <small>Unreleased Alpha</small></a>
+                                <a className="navbar-brand" href="/"><strong>Updog</strong>
+                                    <small>Unreleased Alpha</small>
+                                </a>
                             </div>
                             <ul className="nav navbar-nav">
                                 <li>
@@ -150,7 +181,7 @@ var NavBar = React.createClass({
                                        value={this.state.loginFormEmail}
                                        onChange={this.onInputChanged.bind(this, 'loginFormEmail')}
                                        ref="loginFormEmail"
-                                       required={true}/>
+                                       required/>
                             </div>
 
                             <div className="form-group">
@@ -161,14 +192,14 @@ var NavBar = React.createClass({
                                        value={this.state.loginFormPassword}
                                        onChange={this.onInputChanged.bind(this, 'loginFormPassword')}
                                        ref="loginFormPassword"
-                                       required={true}/>
+                                       required/>
                             </div>
 
-                            <ButtonInput type="submit"
-                                         bsStyle="warning"
-                                         bsSize="large"
-                                         value="Login"
-                                         disabled={this.state.loginInProgress}/>
+                            <Button type="submit"
+                                    bsStyle="warning"
+                                    bsSize="large"
+                                    value="Login"
+                                    disabled={this.state.loginInProgress}/>
                         </form>
 
                         <div>Or log in with:</div>
@@ -188,13 +219,13 @@ var NavBar = React.createClass({
                 </Modal>
             </div>
         );
-    },
+    }
 
-    componentDidMount: function () {
-        this.props.connector.on('self user', function (user) {
+    componentDidMount() {
+        this.props.connector.on('self user', function (user: any) {
             this.setState({user: user});
         }.bind(this));
     }
-});
+}
 
-module.exports = NavBar;
+export default NavBar;

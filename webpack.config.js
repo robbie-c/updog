@@ -34,7 +34,7 @@ var config = {
     ],
 
     resolve: {
-        extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx']
+        extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx', '.ts', '.tsx']
     },
 
     module: {
@@ -74,7 +74,7 @@ var config = {
 };
 
 var clientConfig = _.merge({}, config, {
-    entry: './src/client/client.js',
+    entry: './src/client/client.ts',
     output: {
         filename: 'client/client.js'
     },

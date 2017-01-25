@@ -1,6 +1,6 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('./../navBar/NavBar.jsx');
+import NavBar from './../navBar/NavBar';
 
 var logger = require('../../common/logger');
 var events = require('../../common/constants/events');
@@ -116,4 +116,4 @@ var RoomControl = React.createClass({
     }
 });
 
-module.exports = RoomControl;
+export default RoomControl;

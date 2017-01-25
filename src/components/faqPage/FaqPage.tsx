@@ -1,8 +1,10 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('../navBar/NavBar.jsx');
+import NavBar from '../navBar/NavBar';
 
-var PageConnector;
+declare function require(path: string): any;
+
+var PageConnector : any;
 if (typeof window !== 'undefined') {
     PageConnector = require('../../client/connectors/PageConnector');
 } else {
@@ -38,4 +40,4 @@ var IndexPage = React.createClass({
 
 });
 
-module.exports = IndexPage;
+export default IndexPage;

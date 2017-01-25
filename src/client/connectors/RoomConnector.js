@@ -76,4 +76,4 @@ class RoomConnector extends PageConnector {
     }
 }
 
-module.exports = RoomConnector;
+export default RoomConnector;

@@ -1,14 +1,8 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('./navBar/NavBar.jsx');
+import NavBar from './navBar/NavBar';
 
-var PageConnector;
-if (typeof window !== 'undefined') {
-    PageConnector = require('../client/connectors/PageConnector');
-} else {
-    PageConnector = function () {
-    };
-}
+import PageConnector from '../client/connectors/PageConnector.js';
 
 var IndexPage = React.createClass({
 
@@ -31,9 +25,11 @@ var IndexPage = React.createClass({
 
     componentWillMount: function () {
         console.log('component will mount');
-        this.connector = new PageConnector();
+        if (typeof window !== 'undefined') {
+            this.connector = new PageConnector({}, []);
+        }
     }
 
 });
 
-module.exports = IndexPage;
+export default IndexPage;

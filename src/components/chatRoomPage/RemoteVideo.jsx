@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 
 var logger = require('../../common/logger');
 
@@ -53,4 +53,4 @@ var RemoteVideo = React.createClass({
     }
 });
 
-module.exports = RemoteVideo;
+export default RemoteVideo;

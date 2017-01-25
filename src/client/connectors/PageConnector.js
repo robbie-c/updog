@@ -18,4 +18,4 @@ class PageConnector extends Connector {
     }
 }
 
-module.exports = PageConnector;
+export default PageConnector;

@@ -1,14 +1,8 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('./navBar/NavBar.jsx');
+import NavBar from './navBar/NavBar';
 
-var PageConnector;
-if (typeof window !== 'undefined') {
-    PageConnector = require('../client/connectors/PageConnector');
-} else {
-    PageConnector = function () {
-    };
-}
+import PageConnector from '../client/connectors/PageConnector.js';
 
 var SignUpPage = React.createClass({
 
@@ -16,7 +10,7 @@ var SignUpPage = React.createClass({
 
         return (
             <div className="topLevelContent">
-                <NavBar initialUser={this.props.initialUser} title={this.props.title}/>
+                <NavBar initialUser={this.props.initialUser} title={this.props.title} connector={this.connector}/>
                 <div className="container">
                     <form action="/signup" method="post">
                         <div className="form-group">
@@ -48,8 +42,10 @@ var SignUpPage = React.createClass({
     },
 
     componentWillMount: function () {
-        this.connector = new PageConnector();
+        if (typeof window !== 'undefined') {
+            this.connector = new PageConnector({}, []);
+        }
     }
 });
 
-module.exports = SignUpPage;
+export default SignUpPage;

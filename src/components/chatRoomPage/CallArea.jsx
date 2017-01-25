@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 var _ = require('underscore');
 
 var logger = require('../../common/logger');
@@ -110,4 +110,4 @@ var VideoArea = React.createClass({
     }
 });
 
-module.exports = VideoArea;
+export default VideoArea;

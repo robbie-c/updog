@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 var ReactBootstrap = require('react-bootstrap');
 var Input = ReactBootstrap.Input;
 var ButtonInput = ReactBootstrap.ButtonInput;
@@ -57,4 +57,4 @@ var ChatMessage = React.createClass({
     }
 });
 
-module.exports = ChatMessage;
+export default ChatMessage;

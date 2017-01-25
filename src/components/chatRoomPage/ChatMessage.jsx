@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 
 var Linkify = require('react-linkify');
 
@@ -46,4 +46,4 @@ var ChatMessage = React.createClass({
     }
 });
 
-module.exports = ChatMessage;
+export default ChatMessage;

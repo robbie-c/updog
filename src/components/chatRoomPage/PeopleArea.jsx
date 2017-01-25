@@ -1,4 +1,4 @@
-var React = require('react');
+import * as React from 'react';
 var _ = require('underscore');
 
 var logger = require('../../common/logger');
@@ -89,4 +89,4 @@ var PeopleArea = React.createClass({
     }
 });
 
-module.exports = PeopleArea;
+export default PeopleArea;

@@ -1,18 +1,14 @@
-var React = require('react');
+import * as React from 'react';
+
+declare function require(path: string): any;
 
 var VideoArea = require('./CallArea.jsx');
-var NavBar = require('./../navBar/NavBar.jsx');
+import NavBar from '../navBar/NavBar';
 var RoomControl = require('./RoomControl.jsx');
 var TextChatArea = require('./TextChatArea.jsx');
 var PeopleArea = require('./PeopleArea.jsx');
 
-var RoomConnector;
-if (typeof window !== 'undefined') {
-    RoomConnector = require('../../client/connectors/RoomConnector');
-} else {
-    RoomConnector = function () {
-    };
-}
+import RoomConnector from '../../client/connectors/RoomConnector.js';
 
 var PermanentCallPage = React.createClass({
     render: function () {
@@ -58,8 +54,8 @@ var PermanentCallPage = React.createClass({
     },
 
     componentWillMount: function () {
-        this.connector = new RoomConnector();
+        this.connector = new RoomConnector({}, []);
     }
 });
 
-module.exports = PermanentCallPage;
+export default PermanentCallPage;

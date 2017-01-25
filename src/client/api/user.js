@@ -15,7 +15,7 @@ function loginWithToken(username, password, callback) {
     return doApiCallUnwrapped('/loginWithToken', data, callback);
 }
 
-module.exports = {
+export default {
     apiCompleteProfile: apiCompleteProfile,
     loginWithToken: loginWithToken
 };

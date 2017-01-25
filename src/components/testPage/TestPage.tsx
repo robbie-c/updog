@@ -1,14 +1,14 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('./../navBar/NavBar.jsx');
+import NavBar from './../navBar/NavBar';
 
-var async = require('async');
+declare function require(path: string): any;
 
 var logger = require('../../common/logger');
 
 var RTCPeerConnection = require('rtcpeerconnection');
 
-var PageConnector;
+var PageConnector : any;
 if (typeof window !== 'undefined') {
     PageConnector = require('../../client/connectors/PageConnector');
 } else {
@@ -56,7 +56,7 @@ var TestPage = React.createClass({
                 offerToReceiveAudio: true,
                 offerToReceiveVideo: true
             },
-            function(err, offer) {
+            function(err : Error, offer : any) {
                 if (err) {
                     console.log(err);
                 }
@@ -65,7 +65,7 @@ var TestPage = React.createClass({
 
     },
 
-    onIceCandidate: function(candidate) {
+    onIceCandidate: function(candidate: any) {
         if (this.peerConnection.hadLocalStunCandidate) {
             this.setState({gotSrflxIce: true});
         }
@@ -85,4 +85,4 @@ var TestPage = React.createClass({
 
 });
 
-module.exports = TestPage;
+export default TestPage;

@@ -1,14 +1,8 @@
-var React = require('react');
+import * as React from 'react';
 
-var NavBar = require('./navBar/NavBar.jsx');
+import NavBar from './navBar/NavBar';
 
-var PageConnector;
-if (typeof window !== 'undefined') {
-    PageConnector = require('../client/connectors/PageConnector');
-} else {
-    PageConnector = function () {
-    };
-}
+import PageConnector from '../client/connectors/PageConnector.js';
 
 var ProfilePage = React.createClass({
 
@@ -33,9 +27,11 @@ var ProfilePage = React.createClass({
     },
 
     componentWillMount: function () {
-        this.connector = new PageConnector();
+        if (typeof window !== 'undefined') {
+            this.connector = new PageConnector({}, []);
+        }
     }
 
 });
 
-module.exports = ProfilePage;
+export default ProfilePage;

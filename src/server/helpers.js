@@ -1,5 +1,5 @@
 var componentRegistry = require('../components/registry');
-var React = require('react');
+import * as React from 'react';
 var ReactDOMServer = require('react-dom/server');
 
 var errors = require('../common/errors');

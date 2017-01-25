@@ -1,6 +1,6 @@
-var React = require('react');
+import * as React from 'react';
 
-var CompleteProfileForm = require('./CompleteProfileForm.jsx');
+import CompleteProfileForm from './CompleteProfileForm';
 
 var CompleteProfilePage = React.createClass({
 
@@ -14,4 +14,4 @@ var CompleteProfilePage = React.createClass({
     }
 });
 
-module.exports = CompleteProfilePage;
+export default CompleteProfilePage;
