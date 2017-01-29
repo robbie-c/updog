@@ -1,3 +1,13 @@
+## READ THIS FIRST (written in 2017)
+
+I wrote this in 2015 in my spare time to teach myself React and see how it felt to write a greenfield project with universal React rendering, something I would take for granted now. I also wanted to toy around with WebRTC and WebSockets. I made a lot of decisions back then that I wouldn't make now, the list of which is too long to put here ;)
+
+In a similar vein, I am porting this to TypeScript and tidying up some of those previous bad decisions (notably switching to Redux from my custom-rolled alternative).
+ 
+I suspect the project will be pretty broken for a while, until the porting is done. If you'd like to see what the code used to look like, check out https://github.com/robbie-c/updog/tree/v0.1.0
+
+Since 2015, services like Discord, Curse, and Slack have grown in popularity, and the technology side of this is now just plumbing. I think there would be value to the world in there being a decent FOSS alternative that people could host themselves, but unless I have a lot more free time, this won't be that. You should probably check out / support https://github.com/mumble-voip/mumble
+
 ## Overview
 
 This project aims to create chat-room functionality with audio, video, and screen sharing. Users should be able to create a new room very easily, and invite people just by sharing a link.
