@@ -41,4 +41,4 @@ Right now this is just me (Robbie), but if you'd like to help out please let me 
 
 ## License
 
-There's currently no license, which means the code is copyrighted by default, and you will need to ask my permission to use it. This is because I don't know what I want to do with this project yet. If you want to contribute I will need to fix this.
+MIT
